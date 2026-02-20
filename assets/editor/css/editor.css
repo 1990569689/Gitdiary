@@ -1,0 +1,110 @@
+html {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    height: 100%;
+    width: 100%;
+    display: flex;
+}
+
+/* body {
+    overflow: scroll;
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+    min-height: 100%;
+    margin:0;
+} */
+
+/* #vditor {
+    display: table-cell;
+    outline: 0px solid transparent;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+} */
+.toolbar {
+    height: 42px;
+    width: 100%;
+    align-self: center;
+    align-items: center;
+    align-content: center;
+    display: flex;
+    flex-direction: row;
+    background: linear-gradient(#757575, #616161);
+}
+
+.borderButton {
+    border: 1px solid #424242;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    display: inline-block;
+    padding: 2px;
+    padding-left: 6px;
+    padding-right: 6px;
+    border-radius: 8px;
+    margin-left: 8px;
+}
+
+.vditor {
+    border-radius: 0;
+    border: 0 solid #000;
+    flex: 1;
+    align-self: center;
+    width: 100% !important;
+    max-width: 100vw !important;
+    /* 强制不超过屏幕宽度 */
+    overflow-x: hidden !important;
+    /* 禁止横向滚动 */
+    box-sizing: border-box !important;
+    /* 宽高包含内边距，防止溢出 */
+    /* padding: 12px 12px 12px 12px !important; */
+    /* 移动端轻微内边距，视觉更友好  margin: 6px !important;*/
+
+}
+
+.vditor-toolbar {
+    border-bottom: 0 solid #000;
+    height: 0;
+}
+
+.vditor-textarea {
+    background-color: #fff;
+}
+
+/* 第二步：Vditor容器样式，强制移动端无横向超出、适配屏幕 */
+#vditor {
+    width: 100% !important;
+    max-width: 100vw !important;
+    /* 强制不超过屏幕宽度 */
+    overflow-x: hidden !important;
+    /* 禁止横向滚动 */
+    box-sizing: border-box !important;
+    /* 宽高包含内边距，防止溢出 */
+    /* padding: 12px 12px 12px 12px !important; */
+    /* 移动端轻微内边距，视觉更友好  margin: 6px !important;*/
+
+}
+
+/* 覆盖Vditor默认样式，彻底禁止横向滚动 */
+.vditor-reset {
+    overflow-x: hidden !important;
+}
+
+.vditor-ir,
+.vditor-sv,
+.vditor-wysiwyg {
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+}
+
+/* 移动端工具栏适配，防止挤爆 */
+.vditor-toolbar {
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    /* 移动端滚动顺滑 */
+}

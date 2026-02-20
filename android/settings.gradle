@@ -1,0 +1,53 @@
+pluginManagement {
+    def flutterSdkPath = {
+        def properties = new Properties()
+        file("local.properties").withInputStream { properties.load(it) }
+        def flutterSdkPath = properties.getProperty("flutter.sdk")
+        assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
+        return flutterSdkPath
+    }()
+
+    includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
+
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+        maven { url 'https://maven.aliyun.com/repository/public' }
+      maven { url 'https://maven.aliyun.com/repository/central' }
+      maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+      maven { url 'https://developer.huawei.com/repo/' }
+      gradlePluginPortal()
+      maven { url 'https://maven.aliyun.com/nexus/content/repositories/google' }
+      maven { url 'https://maven.aliyun.com/repository/public' }
+      maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter' }
+      maven { url 'https://jitpack.io' }
+      maven { url 'https://maven.aliyun.com/repository/public' }
+      maven { url 'https://maven.aliyun.com/repository/central' }
+      maven { url 'https://maven.aliyun.com/repository/google' }
+      maven { url 'https://maven.aliyun.com/repository/public' }
+      maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+      maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+      maven { url 'https://repo1.maven.org/maven2/' }
+      maven { url 'https://maven.aliyun.com/repository/google' }
+      maven { url 'https://maven.aliyun.com/repository/jcenter' }
+      maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
+      maven { url "https://download.flutter.io" }
+      maven { url 'https://maven.aliyun.com/repository/google' }
+      maven { url 'https://maven.aliyun.com/repository/jcenter' }
+      maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
+      maven { url 'https://storage.flutter-io.cn/download.flutter.io' }
+
+      google()
+      mavenCentral()
+      jcenter() // Warning: this repository is going to shut down soon
+    }
+}
+
+plugins {
+    id "dev.flutter.flutter-plugin-loader" version "1.0.0"
+    id "com.android.application" version "7.3.0" apply false
+    id "org.jetbrains.kotlin.android" version "1.9.22" apply false
+}
+
+include ":app"

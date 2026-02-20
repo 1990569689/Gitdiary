@@ -1,0 +1,3120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- 引入Markdown解析库和代码高亮基础库（轻量版，适配移动端） -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/turndown/dist/turndown.js"></script> -->
+    <style>
+        @charset "UTF-8";
+        /* ========== 新增：高亮标记样式 ========== */
+        #editor mark {
+            background-color: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+
+        /* ========== 新增：可折叠区域样式 ========== */
+        .collapsible-section {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            background: #f5f5f5;
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .collapsible-header:active {
+            background: #ebebeb;
+        }
+
+        .collapsible-content {
+            padding: 15px;
+            display: none;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .collapsible-content.expanded {
+            display: block;
+        }
+
+        .collapse-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .collapse-icon.expanded {
+            transform: rotate(180deg);
+        }
+
+        /* ========== 新增：标签样式 ========== */
+        .tag {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin: 0px 1px;
+            cursor: pointer;
+        }
+
+        .tag.tag-success {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .tag.tag-warning {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .tag.tag-danger {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        /* ========== 新增：进度条样式 ========== */
+        .progress-bar-container {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 20px;
+            margin: 10px 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            background: linear-gradient(90deg, #4299e1, #667eea);
+            height: 100%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* ========== 新增：卡片样式 ========== */
+        .info-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+
+        }
+
+        .info-card-header {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2d3748;
+        }
+
+        .info-card-body {
+            color: #4a5568;
+            line-height: 1.5;
+        }
+
+        /* ========== 新增：徽章样式 ========== */
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 0 4px;
+        }
+
+        .badge-primary {
+            background: #3182ce;
+            color: white;
+        }
+
+        .badge-success {
+            background: #38a169;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #d69e2e;
+            color: white;
+        }
+
+        .badge-danger {
+            background: #e53e3e;
+            color: white;
+        }
+
+        /* ========== 新增：时间轴样式 ========== */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin: 15px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #cbd5e0;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4299e1;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px #4299e1;
+        }
+
+        .timeline-time {
+            color: #718096;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+
+        .timeline-content {
+            background: #f7fafc;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        /* ========== 新增：提示框样式 ========== */
+        .alert {
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: #e6f7ff;
+            border-color: #1890ff;
+            color: #0c5c99;
+        }
+
+        .alert-success {
+            background: #f6ffed;
+            border-color: #52c41a;
+            color: #3a7728;
+        }
+
+        .alert-warning {
+            background: #fffbe6;
+            border-color: #faad14;
+            color: #ad6800;
+        }
+
+        .alert-danger {
+            background: #fff1f0;
+            border-color: #ff4d4f;
+            color: #a61d24;
+        }
+
+        /* ========== 新增：步骤条样式 ========== */
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .step.active .step-circle {
+            background: #4299e1;
+        }
+
+        .step.completed .step-circle {
+            background: #48bb78;
+        }
+
+        .step-label {
+            font-size: 0.85rem;
+            color: #718096;
+        }
+
+        .custom-video-player {
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #000;
+            position: relative;
+        }
+
+        .video-element {
+            width: 100%;
+            display: block;
+            aspect-ratio: 16 / 9;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            padding: 12px 16px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .custom-video-player:hover .controls,
+        .custom-video-player:focus-within .controls {
+            opacity: 1;
+        }
+
+        /* 移动端始终显示控件（或点击显示） */
+        @media (max-width: 768px) {
+            .controls {
+                opacity: 1;
+                background: rgba(0, 0, 0, 0.7);
+            }
+        }
+
+        .play-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #fff;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .progress-container {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #4a6cf7;
+            border-radius: 3px;
+        }
+
+        .time-display {
+            font-size: 14px;
+            min-width: 80px;
+            text-align: right;
+        }
+
+        /* 响应式优化 */
+        @media (max-width: 480px) {
+            .play-btn {
+                width: 44px;
+                height: 44px;
+                font-size: 16px;
+            }
+
+            .time-display {
+                font-size: 13px;
+                min-width: 70px;
+            }
+
+            .progress-container {
+                height: 5px;
+            }
+        }
+
+
+        .audio-player audio {
+            width: 100%;
+            height: 50px;
+            /* 某些浏览器允许自定义外观 */
+            outline: none;
+            border-radius: 10px;
+            background: #dbdbdbdc
+        }
+
+        /* 针对 WebKit 浏览器（Safari/Chrome）的部分美化 */
+        .audio-player audio::-webkit-media-controls-panel {
+            border-radius: 10px;
+            background: #dbdbdbdc
+        }
+
+        .audio-player audio::-webkit-media-controls-play-button,
+        .audio-player audio::-webkit-media-controls-timeline {
+            /* 注意：timeline 样式无法完全自定义 */
+        }
+
+        * {
+            color-scheme: dark !important;
+            background-color: #000000 !important;
+            color: #ffffff !important;
+            border-color: #333 !important;
+        }
+
+        a {
+            color: #8ab4f8 !important;
+        }
+
+        input,
+        textarea,
+        [contenteditable="true"] {
+            caret-color: #8ab4f8 !important;
+        }
+
+        /* ========== 基础重置与全局样式（优化版） ========== */
+        html {
+            line-height: 1.2;
+            /* 提升移动端可读性 */
+            -webkit-text-size-adjust: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            font-size: calc(100vw / 375 * 16);
+
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            min-height: 100px;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: rgba(61, 61, 61, 1.0);
+            /*#3D3D3D*/
+            word-wrap: break-word;
+            /* 响应式基准字体（适配375px宽度） */
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            /* 禁止页面整体滚动 */
+            display: flex;
+            /* 统一使用flex布局，修复原有table布局冲突 */
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            /* 完善安全区域适配 */
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            box-sizing: border-box;
+            /* 移动端友好字体 */
+            font-size: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            background-color: #ffffff;
+            /* 基础背景色 */
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+            /* 优化点击高亮 */
+        }
+
+        main {
+            display: block;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            margin: 0.8em 0 0.4em;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+        }
+
+        h5 {
+            font-size: 1.1rem;
+        }
+
+        h6 {
+            font-size: 1rem;
+        }
+
+        p {
+            margin: 0.6em 0;
+            line-height: 1.2;
+        }
+
+        hr {
+            box-sizing: content-box;
+            height: 0;
+            overflow: visible;
+            border: none;
+            border-top: 1px solid #eee;
+            margin: 1.5rem 0;
+        }
+
+        pre {
+            font-family: monospace, monospace;
+            font-size: 1em;
+        }
+
+        a {
+            background-color: transparent;
+            color: #0066cc;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        abbr[title] {
+            border-bottom: none;
+            text-decoration: underline;
+            text-decoration: underline dotted;
+        }
+
+        b,
+        strong {
+            font-weight: bolder;
+        }
+
+        code,
+        kbd,
+        samp {
+            font-family: "SF Mono", Monaco, Consolas, monospace;
+            font-size: 0.9rem;
+        }
+
+        small {
+            font-size: 80%;
+        }
+
+        sub,
+        sup {
+            font-size: 75%;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline;
+        }
+
+        sub {
+            bottom: -0.25em;
+        }
+
+        sup {
+            top: -0.5em;
+        }
+
+
+
+        img {
+            border-style: none;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0.8rem 0;
+            border-radius: 6px;
+            /* 图片长按高亮 */
+            -webkit-user-select: none;
+            user-select: none;
+            transition: all 0.2s ease;
+            -webkit-touch-callout: none;
+            /* 禁用iOS长按菜单 */
+            user-select: none;
+            /* 禁用文本选择 */
+            pointer-events: auto;
+            /* 确保可接收触摸事件 */
+        }
+
+        img:active {
+            opacity: 0.8;
+        }
+
+        /* ========== 图片样式重构（新增删除按钮） ========== */
+        .image-wrapper {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+            margin: 0.8rem 0;
+            border-radius: 6px;
+        }
+
+        .image-wrapper img {
+            border-style: none;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 6px;
+            -webkit-user-select: none;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        .image-wrapper img:active {
+            opacity: 0.8;
+        }
+
+        /* 图片删除按钮样式（圆形X） */
+        .image-delete-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .image-delete-btn:hover,
+        .image-delete-btn:active {
+            background-color: #ff1a1a;
+            transform: scale(1.1);
+        }
+
+        /* ========== 美化Video组件（核心修改） ========== */
+        #editor video {
+            max-width: 100%;
+            display: block;
+            margin: 1rem auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            background-color: #000;
+            transition: all 0.3s ease;
+            /* 移动端视频控制栏优化 */
+            -webkit-appearance: none;
+        }
+
+
+        /* 视频封面/占位样式 */
+        #editor video::poster {
+            border-radius: 8px;
+        }
+
+        /* 自定义视频控制栏基础样式（可选扩展） */
+        .video-container {
+            position: relative;
+            max-width: 100%;
+            margin: 1rem auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-container video {
+            width: 100%;
+            display: block;
+            border-radius: 8px;
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+            padding: 15px 10px 5px;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-container:hover .video-controls {
+            opacity: 1;
+        }
+
+
+        /* ========== 表单元素移动端优化 ========== */
+        button,
+        input,
+        optgroup,
+        select,
+        textarea {
+            font-family: inherit;
+            font-size: 100%;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        button,
+        input {
+            overflow: visible;
+        }
+
+        button,
+        select {
+            text-transform: none;
+        }
+
+        button,
+        [type="button"],
+        [type="reset"],
+        [type="submit"] {
+            -webkit-appearance: button;
+        }
+
+        button::-moz-focus-inner,
+        [type="button"]::-moz-focus-inner,
+        [type="reset"]::-moz-focus-inner,
+        [type="submit"]::-moz-focus-inner {
+            border-style: none;
+            padding: 0;
+        }
+
+        button:-moz-focusring,
+        [type="button"]:-moz-focusring,
+        [type="reset"]:-moz-focusring,
+        [type="submit"]:-moz-focusring {
+            outline: 1px dotted ButtonText;
+        }
+
+        fieldset {
+            padding: 0.35em 0.75em 0.625em;
+        }
+
+        legend {
+            box-sizing: border-box;
+            color: inherit;
+            display: table;
+            max-width: 100%;
+            padding: 0;
+            white-space: normal;
+        }
+
+        progress {
+            vertical-align: baseline;
+        }
+
+        textarea {
+            overflow: auto;
+        }
+
+        [type="checkbox"],
+        [type="radio"] {
+            box-sizing: border-box;
+            padding: 0;
+        }
+
+        [type="number"]::-webkit-inner-spin-button,
+        [type="number"]::-webkit-outer-spin-button {
+            height: auto;
+        }
+
+        [type="search"] {
+            -webkit-appearance: textfield;
+            outline-offset: -2px;
+        }
+
+        [type="search"]::-webkit-search-decoration {
+            -webkit-appearance: none;
+        }
+
+        ::-webkit-file-upload-button {
+            -webkit-appearance: button;
+            font: inherit;
+        }
+
+        details {
+            display: block;
+        }
+
+        summary {
+            display: list-item;
+        }
+
+        template {
+            display: none;
+        }
+
+        [hidden] {
+            display: none;
+        }
+
+        /* ========== 编辑器核心样式（重点优化） ========== */
+        #editor {
+            flex: 1;
+            /* 占满剩余空间 */
+            outline: none;
+            /* 移除默认轮廓 */
+            background-color: #fff;
+            /* 优化内边距，适配安全区域 */
+            padding: 10px 10px;
+            box-sizing: border-box;
+            /* 移动端滚动优化 */
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            /* 文本基础样式 */
+            color: #333;
+            line-height: 1.6;
+            /* 光标样式优化 */
+            caret-color: #000000;
+
+
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* 隐藏webkit滚动条 */
+        #editor::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* 占位符样式美化 */
+        #editor[placeholder]:empty:not(:focus):before {
+            content: attr(placeholder);
+            opacity: 0.6;
+            color: #999;
+            font-size: 1.1rem;
+        }
+
+        /* ========== 富文本元素美化 ========== */
+        /* 复选框美化 */
+        #editor input[type="checkbox"] {
+            width: 1.1rem;
+            height: 1.1rem;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+            accent-color: #ee2e27;
+            /* 复选框主题色 */
+        }
+
+        /* 引用块美化 */
+        #editor blockquote {
+            background: #f8f9fa;
+            border-left: 2px solid #ffffff;
+            /* 主题色边框 */
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 0 2px 2px 0;
+            /* 圆角优化 */
+            color: #555;
+        }
+
+        #editor blockquote:before {
+            content: none;
+            /* 移除原有大号引号，更简洁 */
+        }
+
+        #editor blockquote p {
+            display: block;
+            margin: 0;
+        }
+
+        /* 列表样式优化 */
+        #editor ul,
+        #editor ol {
+            margin: 0.8rem 0;
+            padding-left: 1.8rem;
+        }
+
+        #editor li {
+            margin: 0.4rem 0;
+            line-height: 1.6;
+        }
+
+
+        /* 代码块美化（新增语言标识样式） */
+        #editor pre {
+            background: #ffffff;
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border: 1px solid #eee;
+            position: relative;
+        }
+
+        /* 代码块语言标识（右上角） */
+        #editor pre::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.7rem;
+            color: #292929;
+            background: #ffffff;
+            border-radius: 0 6px 0 6px;
+        }
+
+        #editor pre code {
+            color: #000000;
+            font-size: 0.8rem;
+            line-height: 1.2;
+            display: block;
+            white-space: pre;
+        }
+
+
+
+        /* 表格美化 */
+        #editor table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            border-radius: 4px;
+            overflow: hidden;
+
+        }
+
+        #editor table td,
+        #editor table th {
+            border: 1px solid #eee;
+            padding: 0.8rem;
+            text-align: left;
+        }
+
+        #editor table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        /* 媒体元素优化 */
+        #editor video,
+        #editor audio,
+        #editor iframe {
+            max-width: 100%;
+            display: block;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        #editor .audio-player {
+            width: 100%;
+
+        }
+
+        /* 目录样式优化 */
+        #editor .toc {
+            border-left: 3px solid #4b4b4b;
+            padding: 1rem;
+            margin: 1rem 0;
+            background: #f8f9fa;
+            border-radius: 0 4px 4px 0;
+        }
+
+        #editor .toc a {
+            display: block;
+            padding: 0.2rem 0;
+        }
+
+        #editor .toc a:hover {
+            color: #020202;
+            text-decoration: none;
+        }
+
+        /* 选中文本样式优化 */
+        #editor ::-webkit-selection {
+            background: #8f8f8f;
+            color: #2e2e2e;
+        }
+
+        #editor ::selection {
+            background: #8f8f8f;
+            color: #2e2e2e;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="editor" contenteditable="true">
+
+    </div>
+
+    <script>
+        var Rich = {};
+
+        // ========== 核心优化1：强化选区管理（参考原版逻辑） ==========
+
+
+        Rich.currentSelection = {
+            "startContainer": 0,
+            "startOffset": 0,
+            "endContainer": 0,
+            "endOffset": 0,
+            "rangeCache": 0,
+        };
+
+        Rich.editor = document.getElementById('editor');
+        // ========== 新增：光标定位到内容末尾 ==========
+        Rich.setEndOfContenteditable = function (contentEditableElement) {
+            var range, selection;
+            if (document.createRange) { // 现代浏览器
+                range = document.createRange();
+                range.selectNodeContents(contentEditableElement);
+                range.collapse(false); // 折叠到末尾
+                selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+            } else if (document.selection) { // IE8及以下兼容
+                range = document.body.createTextRange();
+                range.moveToElementText(contentEditableElement);
+                range.collapse(false);
+                range.select();
+            }
+        }
+        document.addEventListener("selectionchange", function () { Rich.backuprange(); });
+
+        Rich.isInBlock = function (tagName) {
+            const selection = window.getSelection();
+            if (!selection.rangeCount) return false;
+            const range = selection.getRangeAt(0);
+            const parent = range.commonAncestorContainer;
+            // 向上查找父元素
+            let el = parent.nodeType === 1 ? parent : parent.parentNode;
+            while (el && el !== Rich.editor) {
+                if (el.tagName && el.tagName.toLowerCase() === tagName.toLowerCase()) {
+                    return true;
+                }
+                el = el.parentNode;
+            }
+            return false;
+        }
+
+
+        Rich.callback = function () {
+            window.location.href = "re-callback://" + encodeURIComponent(Rich.getHtml());
+        }
+
+        Rich.setHtml = function (contents) {
+            Rich.editor.innerHTML = decodeURIComponent(escape(atob(contents)));
+            // 设置HTML后重新启用图片懒加载decodeURIComponent(contents.replace(/\+/g, '%20'))
+            Rich.enableImageLazyLoad();
+        }
+        Rich.insertHtmlModel = function (contents) {
+
+            Rich.restorerange();
+            document.execCommand('insertHTML', false, decodeURIComponent(escape(atob(contents))));
+            Rich.callback();
+            // 设置HTML后重新启用图片懒加载decodeURIComponent(contents.replace(/\+/g, '%20'))
+            // Rich.enableImageLazyLoad();
+        }
+        Rich.getHtml = function () {
+            return Rich.editor.innerHTML;
+        }
+        Rich.getHtmlData = function () {
+            return encodeURIComponent(Rich.getHtml());
+        }
+
+        Rich.getText = function () {
+            return Rich.editor.innerText;
+        }
+
+        Rich.setBaseTextColor = function (color) {
+            Rich.editor.style.color = color;
+        }
+
+        Rich.setBaseFontSize = function (size) {
+            Rich.editor.style.fontSize = size;
+        }
+
+        Rich.setPadding = function (left, top, right, bottom) {
+            Rich.editor.style.paddingLeft = left;
+            Rich.editor.style.paddingTop = top;
+            Rich.editor.style.paddingRight = right;
+            Rich.editor.style.paddingBottom = bottom;
+        }
+
+        Rich.setBackgroundColor = function (color) {
+            document.body.style.backgroundColor = color;
+            Rich.editor.style.backgroundColor = color; // 同步编辑器背景色
+        }
+
+        Rich.setBackgroundImage = function (image) {
+            Rich.editor.style.backgroundImage = image;
+            Rich.editor.style.backgroundSize = 'cover';
+            Rich.editor.style.backgroundRepeat = 'no-repeat';
+            Rich.editor.style.backgroundPosition = 'center';
+        }
+
+        Rich.setWidth = function (size) {
+            Rich.editor.style.minWidth = size;
+        }
+
+        Rich.setHeight = function (size) {
+            Rich.editor.style.height = size;
+        }
+
+        Rich.setTextAlign = function (align) {
+            Rich.editor.style.textAlign = align;
+        }
+
+        Rich.setVerticalAlign = function (align) {
+            Rich.editor.style.verticalAlign = align;
+        }
+
+        Rich.setPlaceholder = function (placeholder) {
+            Rich.editor.setAttribute("placeholder", placeholder);
+        }
+
+        Rich.setInputEnabled = function (inputEnabled) {
+            Rich.editor.contentEditable = String(inputEnabled);
+            // 禁用时改变光标样式
+            // Rich.editor.style.cursor = inputEnabled ? 'text' : 'default';
+        }
+
+        Rich.undo = function () {
+            document.execCommand('undo', false, null);
+            Rich.checkUndoRedoState(); // 操作后更新撤销/重做状态
+        }
+
+        Rich.redo = function () {
+            document.execCommand('redo', false, null);
+            Rich.checkUndoRedoState(); // 操作后更新撤销/重做状态
+        }
+
+        Rich.setBold = function () {
+            document.execCommand('bold', false, null);
+            Rich.enabledEditingItems();
+        }
+
+        Rich.setItalic = function () {
+            document.execCommand('italic', false, null);
+            Rich.enabledEditingItems();
+        }
+
+        Rich.setSubscript = function () {
+            document.execCommand('subscript', false, null);
+            Rich.enabledEditingItems();
+        }
+
+        Rich.setSuperscript = function () {
+            document.execCommand('superscript', false, null);
+            Rich.enabledEditingItems();
+        }
+
+        Rich.setStrikeThrough = function () {
+            document.execCommand('strikeThrough', false, null);
+            Rich.enabledEditingItems();
+        }
+
+        Rich.setUnderline = function () {
+            document.execCommand('underline', false, null);
+            Rich.enabledEditingItems();
+        }
+
+        Rich.setBullets = function () {
+            document.execCommand('insertUnorderedList', false, null);
+            Rich.enabledEditingItems();
+        }
+
+        Rich.setNumbers = function () {
+            document.execCommand('insertOrderedList', false, null);
+            Rich.enabledEditingItems();
+        }
+
+        // Rich.setTextColor = function (color) {
+        //   Rich.restorerange();
+        //   document.execCommand("styleWithCSS", null, true);
+        //   document.execCommand('foreColor', false, color);
+        //   document.execCommand("styleWithCSS", null, false);
+        //   Rich.enabledEditingItems();
+        // }
+
+        // Rich.setTextBackgroundColor = function (color) {
+        //   Rich.restorerange();
+        //   document.execCommand("styleWithCSS", null, true);
+        //   document.execCommand('hiliteColor', false, color);
+        //   document.execCommand("styleWithCSS", null, false);
+        //   Rich.enabledEditingItems();
+        // }
+        // ========== 优化：文字颜色设置（支持未选中状态） ==========
+        Rich.setTextColor = function (color) {
+            Rich.restorerange();
+            const selection = window.getSelection();
+
+            // 如果有选中文本，直接应用颜色
+            if (selection.toString().length > 0) {
+                document.execCommand("styleWithCSS", null, true);
+                document.execCommand('foreColor', false, color);
+                document.execCommand("styleWithCSS", null, false);
+            } else {
+                // 如果没有选中文本，插入一个带颜色的span作为占位
+                const span = document.createElement('span');
+                span.style.color = color;
+                span.innerHTML = '&#8203;'; // 零宽度空格，用户可以直接输入
+
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    range.insertNode(span);
+                    // 将光标移到span内部
+                    range.setStart(span, 0);
+                    range.setEnd(span, 0);
+                    range.collapse(true);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+
+                    // 保存当前颜色设置，用于后续输入
+                    Rich.currentTextColor = color;
+                }
+            }
+
+            Rich.enabledEditingItems();
+            Rich.callback();
+        }
+
+        // ========== 优化：文字背景色设置（支持未选中状态） ==========
+        Rich.setTextBackgroundColor = function (color) {
+            Rich.restorerange();
+            const selection = window.getSelection();
+
+            // 如果有选中文本，直接应用背景色
+            if (selection.toString().length > 0) {
+                document.execCommand("styleWithCSS", null, true);
+                document.execCommand('hiliteColor', false, color);
+                document.execCommand("styleWithCSS", null, false);
+            } else {
+                // 如果没有选中文本，插入一个带背景色的span作为占位
+                const span = document.createElement('span');
+                span.style.backgroundColor = color;
+                span.innerHTML = '&#8203;'; // 零宽度空格
+
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    range.insertNode(span);
+                    // 将光标移到span内部
+                    range.setStart(span, 0);
+                    range.setEnd(span, 0);
+                    range.collapse(true);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+
+                    // 保存当前背景色设置
+                    Rich.currentBackgroundColor = color;
+                }
+            }
+
+            Rich.enabledEditingItems();
+            Rich.callback();
+        }
+        /**
+          * 快捷设置移动端常用颜色（可选，增强体验）
+          */
+        Rich.setMobileTextColor = function (type) {
+            const colorMap = {
+                primary: '#4299e1',   // 主色（蓝）
+                success: '#48bb78',   // 成功（绿）
+                warning: '#ed8936',   // 警告（橙）
+                danger: '#e53e3e',    // 危险（红）
+                dark: '#2d3748',      // 深色
+                gray: '#718096',      // 灰色
+                black: '#000000',     // 黑色
+                white: '#ffffff'      // 白色（适配深色模式）
+            };
+            Rich.setTextColor(colorMap[type] || colorMap.dark);
+        };
+
+        /**
+         * 快捷设置移动端常用背景色（可选）
+         */
+        Rich.setMobileBgColor = function (type) {
+            const bgMap = {
+                primary: '#e8f4f8',   // 主色浅背景
+                success: '#eaf6fa',   // 成功浅背景
+                warning: '#fef7fb',   // 警告浅背景
+                danger: '#fdf2f8',    // 危险浅背景
+                light: '#f5f5f5',     // 浅灰
+                clear: 'transparent'  // 透明（清除背景色）
+            };
+            Rich.setTextBackgroundColor(bgMap[type] || bgMap.light);
+        };
+        // Rich.setFontSize = function (fontSize) {
+        //   document.execCommand("fontSize", false, fontSize);
+        //   Rich.enabledEditingItems();
+        // }
+        /**
+         * 设置字体大小（智能识别）
+         * @param {string|number} fontSize - 字体大小
+         *   - 数字 1-7: 使用execCommand的标准尺寸
+         *   - 带单位字符串: 使用CSS样式（如 '16px', '1.2rem'）
+         *   - 纯数字: 自动添加px单位
+         */
+        // Rich.setFontSize = function (fontSize) {
+        //   Rich.restorerange();
+        //   const selection = window.getSelection();
+        //   // 智能处理fontSize参数
+        //   let actualSize;
+        //   if (typeof fontSize === 'number') {
+        //     if (fontSize >= 1 && fontSize <= 7) {
+        //       // 1-7 的数字，使用execCommand映射
+        //       const sizeMap = {
+        //         1: '10px',
+        //         2: '13px',
+        //         3: '16px',
+        //         4: '18px',
+        //         5: '24px',
+        //         6: '32px',
+        //         7: '48px'
+        //       };
+        //       actualSize = sizeMap[fontSize];
+        //     } else {
+        //       // 其他数字，当作px处理
+        //       actualSize = fontSize + 'px';
+        //     }
+        //   } else {
+        //     // 字符串，直接使用
+        //     actualSize = fontSize;
+        //   }
+        //   if (selection.toString().length > 0) {
+        //     // 有选中文本
+        //     const range = selection.getRangeAt(0);
+        //     const span = document.createElement('span');
+        //     span.style.fontSize = actualSize;
+        //     try {
+        //       range.surroundContents(span);
+        //     } catch (e) {
+        //       // 跨元素选区的处理
+        //       const contents = range.extractContents();
+        //       span.appendChild(contents);
+        //       range.insertNode(span);
+        //     }
+        //   } else {
+        //     // 无选中文本
+        //     const span = document.createElement('span');
+        //     span.style.fontSize = actualSize;
+        //     span.setAttribute('data-font-size-marker', 'true');
+        //     span.textContent = '\u200B';
+        //     const range = selection.getRangeAt(0);
+        //     range.insertNode(span);
+        //     const newRange = document.createRange();
+        //     newRange.setStart(span.firstChild, 1);
+        //     newRange.collapse(true);
+        //     selection.removeAllRanges();
+        //     selection.addRange(newRange);
+        //   }
+        //   Rich.enabledEditingItems();
+        //   Rich.callback();
+        // }
+
+        Rich.setFontSize = function (fontSize) {
+            Rich.restorerange();
+
+            const sel = window.getSelection();
+            if (!sel.rangeCount) return;
+
+            const text = sel.toString();
+
+            if (text) {
+                // 有选中文本，直接替换
+                document.execCommand('insertHTML', false,
+                    `<span style="font-size:${fontSize}">${text}</span>`);
+            } else {
+                // 无选中，插入标记
+                document.execCommand('insertHTML', false,
+                    `<span style="font-size:${fontSize}">&#8203;</span>`);
+            }
+
+            Rich.enabledEditingItems();
+            Rich.callback();
+        }
+
+
+
+        Rich.setHeading = function (heading) {
+            document.execCommand('formatBlock', false, '<h' + heading + '>');
+            Rich.enabledEditingItems();
+        }
+
+        Rich.setIndent = function () {
+            document.execCommand('indent', false, null);
+            Rich.enabledEditingItems();
+        }
+
+        Rich.setOutdent = function () {
+            document.execCommand('outdent', false, null);
+            Rich.enabledEditingItems();
+        }
+
+        Rich.setJustifyLeft = function () {
+            document.execCommand('justifyLeft', false, null);
+            Rich.enabledEditingItems();
+        }
+
+        Rich.setJustifyCenter = function () {
+            document.execCommand('justifyCenter', false, null);
+            Rich.enabledEditingItems();
+        }
+
+        Rich.setJustifyRight = function () {
+            document.execCommand('justifyRight', false, null);
+            Rich.enabledEditingItems();
+        }
+
+
+        // 其余未修改的方法保持不变（如callback、setHtml、getHtml等）...
+
+        // ========== 重点修改：setBlockquote方法 ==========
+        Rich.setBlockquote = function () {
+            Rich.restorerange(); // 恢复之前保存的选区
+            // 1. 插入引用块
+            document.execCommand('formatBlock', false, '<blockquote>');
+            // 2. 创建空的普通段落作为新输入行
+            const newPara = document.createElement('p');
+            newPara.innerHTML = '&nbsp;'; // 加入空白符确保段落可点击编辑
+            // 3. 获取当前的引用块元素，并把新段落插入到引用块后面
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                // 向上查找最近的blockquote元素
+                let blockquote = range.commonAncestorContainer;
+                blockquote = blockquote.nodeType === 1 ? blockquote : blockquote.parentNode;
+                while (blockquote && blockquote !== Rich.editor) {
+                    if (blockquote.tagName && blockquote.tagName.toLowerCase() === 'blockquote') {
+                        break;
+                    }
+                    blockquote = blockquote.parentNode;
+                }
+                // 4. 将新段落插入到引用块后方
+                if (blockquote && blockquote.parentNode) {
+                    blockquote.parentNode.insertBefore(newPara, blockquote.nextSibling);
+                } else {
+                    // 兼容：如果没找到引用块，直接添加到编辑器末尾
+                    Rich.editor.appendChild(newPara);
+                }
+                // 5. 将光标定位到新段落中
+                const newRange = document.createRange();
+                newRange.selectNodeContents(newPara);
+                newRange.collapse(true); // 光标定位到段落开头
+                selection.removeAllRanges();
+                selection.addRange(newRange);
+            }
+
+            Rich.enabledEditingItems();
+            Rich.callback(); // 触发回调更新状态
+        }
+
+        // ========== 核心修改：图片插入方法（添加删除按钮） ==========
+        /**
+         * 创建带删除按钮的图片容器
+         * @param {string} imgSrc - 图片地址
+         * @param {string} altText - 替代文本
+         * @returns {HTMLElement} 图片容器
+         */
+
+        Rich.insertImageWithDeleteBtn = function (imageUrl, altText) {
+            Rich.restorerange();
+            const wrapper = Rich.createImageWithDeleteBtn(imageUrl, altText);
+
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                range.deleteContents();
+                range.insertNode(wrapper);
+                // 光标定位到图片后方
+                range.setStartAfter(wrapper);
+                range.setEndAfter(wrapper);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            } else {
+                Rich.editor.appendChild(wrapper);
+            }
+
+            Rich.callback();
+        }
+
+        Rich.createImageWithDeleteBtn = function (imgSrc, altText) {
+            // 创建图片容器
+            const wrapper = document.createElement('div');
+            wrapper.className = 'image-wrapper';
+
+            // 创建图片元素
+            const img = document.createElement('img');
+            img.src = imgSrc;
+            img.alt = altText || '图片';
+            img.style.maxWidth = '100%';
+            img.style.height = 'auto';
+            img.style.borderRadius = '6px';
+            // 图片加载失败处理
+            img.onerror = function () {
+                img.src = Rich.imageLoadFailedBase64;
+                img.alt = '图片加载失败';
+            };
+            // 创建删除按钮
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'image-delete-btn';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.onclick = function (e) {
+                e.stopPropagation(); // 阻止事件冒泡
+                wrapper.remove(); // 删除整个图片容器
+                Rich.callback(); // 触发回调
+                window.location.href = "re-image-delete://" + encodeURI('图片已删除');
+            };
+            // 组装元素
+            wrapper.appendChild(img);
+            wrapper.appendChild(deleteBtn);
+
+            return wrapper;
+        }
+        // Rich.setBlockquote = function () {
+        //   document.execCommand('formatBlock', false, '<blockquote>');
+        //   // document.execCommand('br', false, '<br>');
+        //   Rich.enabledEditingItems();
+        // }
+        // 插入Base64图片（优化：添加加载失败处理）
+        Rich.insertImageBase64 = function insertImage(imageUrl, altText) {
+            const editor = document.getElementById('editor');
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = altText || '图片';
+            img.style.maxWidth = '100%';
+            img.style.height = 'auto';
+            img.style.borderRadius = '4px';
+            // 图片加载失败时显示占位
+            img.onerror = function () {
+                img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iIzkkIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7nlLXlv4Mg5Zu+54mHPC90ZXh0Pjwvc3ZnPg==';
+                img.alt = '图片加载失败';
+            };
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                range.deleteContents();
+                range.insertNode(img);
+                range.setStartAfter(img);
+                range.setEndAfter(img);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            } else {
+                editor.appendChild(img);
+            }
+            Rich.callback();
+        }
+        // 优化insertImage方法（添加onerror处理）
+        Rich.insertImage = function (url, alt) {
+            // 创建带onerror的图片HTML
+            const html = `<img src="${url}" alt="${alt || '图片'}" loading="lazy" 
+                     onerror="this.src='${Rich.imageLoadFailedBase64}';this.alt='图片加载失败';this.onerror=null;"/>`;
+            Rich.insertHTML(html);
+        }
+
+        // 优化insertImageW方法
+        Rich.insertImageW = function (url, alt, width) {
+            const html = `<img src="${url}" alt="${alt || '图片'}" width="${width}" loading="lazy"
+                     onerror="this.src='${Rich.imageLoadFailedBase64}';this.alt='图片加载失败';this.onerror=null;"/>`;
+            Rich.insertHTML(html);
+        }
+
+        // 优化insertImageWH方法
+        Rich.insertImageWH = function (url, alt, width, height) {
+            const html = `<img src="${url}" alt="${alt || '图片'}" width="${width}" height="${height}" loading="lazy"
+                     onerror="this.src='${Rich.imageLoadFailedBase64}';this.alt='图片加载失败';this.onerror=null;"/>`;
+            Rich.insertHTML(html);
+        }
+
+        Rich.insertStyleVideo = function (url) {
+            var html = ` <div class="custom-video-player" tabindex="0">
+    <video 
+      class="video-element" 
+      id="videoElement"
+      playsinline
+      webkit-playsinline
+      x5-playsinline
+    ><source src="` + url + `"  type="video/mp4"><br> </video>
+    <div class="controls">
+      <button class="play-btn" id="playBtn">▶</button>
+      <div class="progress-container" id="progressContainer">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div class="time-display" id="timeDisplay">0:00 / 0:00</div>
+    </div>
+  </div>`; // 添加playsinline适配移动端
+            Rich.insertHTML(html);
+            const video = document.getElementById('videoElement');
+            const playBtn = document.getElementById('playBtn');
+            const progressBar = document.getElementById('progressBar');
+            const progressContainer = document.getElementById('progressContainer');
+            const timeDisplay = document.getElementById('timeDisplay');
+
+            // 格式化时间
+            function formatTime(seconds) {
+                const min = Math.floor(seconds / 60);
+                const sec = Math.floor(seconds % 60);
+                return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+            }
+
+            // 更新播放按钮
+            function updatePlayButton() {
+                playBtn.textContent = video.paused ? '▶' : '⏸';
+            }
+
+            // 播放/暂停
+            playBtn.addEventListener('click', () => {
+                if (video.paused) {
+                    video.play();
+                } else {
+                    video.pause();
+                }
+                updatePlayButton();
+            });
+
+            // 更新进度和时间
+            video.addEventListener('timeupdate', () => {
+                if (video.duration) {
+                    const percent = (video.currentTime / video.duration) * 100;
+                    progressBar.style.width = `${percent}%`;
+                    timeDisplay.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
+                }
+            });
+
+            // 点击进度条跳转
+            progressContainer.addEventListener('click', (e) => {
+                const rect = progressContainer.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const width = rect.width;
+                video.currentTime = (clickX / width) * video.duration;
+            });
+
+            // 加载元数据后更新总时长
+            video.addEventListener('loadedmetadata', () => {
+                timeDisplay.textContent = `0:00 / ${formatTime(video.duration)}`;
+            });
+
+            // 播放结束
+            video.addEventListener('ended', () => {
+                updatePlayButton();
+                progressBar.style.width = '0%';
+            });
+        }
+
+
+        Rich.insertVideo = function (url, alt) {
+            var html = '<video src="' + url + '" controls playsinline></video><br>'; // 添加playsinline适配移动端
+            Rich.insertHTML(html);
+        }
+
+        Rich.insertVideoW = function (url, width) {
+            var html = '<video src="' + url + '" width="' + width + '" controls playsinline></video><br>';
+            Rich.insertHTML(html);
+        }
+
+        Rich.insertVideoWH = function (url, width, height) {
+            var html = '<video src="' + url + '" width="' + width + '" height="' + height + '" controls playsinline></video><br>';
+            Rich.insertHTML(html);
+        }
+
+        Rich.insertAudio = function (url, alt) {
+            var html = '  <div class="audio-player"><audio src="' + url + '" controls ></audio> </div><br>';
+            Rich.insertHTML(html);
+        }
+
+        Rich.insertFrameVideo = function (url) {
+            var html = '<iframe width="100%" height="200px" src="' + url + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen playsinline></iframe><br>';
+            Rich.insertHTML(html);
+        }
+
+        Rich.insertFrameVideoW = function (url, width) {
+            var html = '<iframe width="' + width + '" height="200px" src="' + url + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen playsinline></iframe><br>';
+            Rich.insertHTML(html);
+        }
+
+        Rich.insertFrameVideoWH = function (url, width, height) {
+            var html = '<iframe width="' + width + '" height="' + height + '" src="' + url + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen playsinline></iframe><br>';
+            Rich.insertHTML(html);
+        }
+
+        Rich.insertHTML = function (html) {
+            Rich.restorerange();
+            document.execCommand('insertHTML', false, html);
+            Rich.callback();
+        }
+
+        Rich.insertLink = function (url, title) {
+            Rich.restorerange();
+            var sel = document.getSelection();
+            if (sel.toString().length == 0) {
+                document.execCommand("insertHTML", false, "<a href='" + url + "'>" + title + "</a>");
+            } else if (sel.rangeCount) {
+                var el = document.createElement("a");
+                el.setAttribute("href", url);
+                el.setAttribute("title", title);
+                var range = sel.getRangeAt(0).cloneRange();
+                range.surroundContents(el);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+            Rich.callback();
+        }
+
+        Rich.setTodo = function (text, value) {
+            if (value == "true") {
+                var html = '<input type="checkbox" name="' + text + '" checked=' + value + '/> ';
+            } else {
+                var html = '<input type="checkbox" name="' + text + '"/> ';
+            }
+            document.execCommand('insertHTML', false, html);
+            Rich.callback();
+        }
+
+        Rich.prepareInsert = function () {
+            Rich.backuprange();
+        }
+
+
+        // ========== 优化：选区备份（更鲁棒） ==========
+        Rich.backuprange = function () {
+            var selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                var range = selection.getRangeAt(0);
+                Rich.currentSelection = {
+                    "startContainer": range.startContainer,
+                    "startOffset": range.startOffset,
+                    "endContainer": range.endContainer,
+                    "endOffset": range.endOffset,
+                    "rangeCache": range.cloneRange()
+                };
+            }
+        }
+
+        // ========== 优化：选区恢复（增加容错） ==========
+        Rich.restorerange = function () {
+            var selection = window.getSelection();
+            selection.removeAllRanges();
+            try {
+                if (Rich.currentSelection.rangeCache) {
+                    selection.addRange(Rich.currentSelection.rangeCache);
+                } else {
+                    var range = document.createRange();
+                    range.setStart(Rich.currentSelection.startContainer || Rich.editor, Rich.currentSelection.startOffset);
+                    range.setEnd(Rich.currentSelection.endContainer || Rich.editor, Rich.currentSelection.endOffset);
+                    selection.addRange(range);
+                }
+            } catch (e) {
+                console.warn('恢复选区失败:', e);
+                Rich.focus();
+            }
+        }
+
+        // Rich.backuprange = function () {
+        //   var selection = window.getSelection();
+        //   if (selection.rangeCount > 0) {
+        //     var range = selection.getRangeAt(0);
+        //     Rich.currentSelection = {
+        //       "startContainer": range.startContainer,
+        //       "startOffset": range.startOffset,
+        //       "endContainer": range.endContainer,
+        //       "endOffset": range.endOffset
+        //     };
+        //   }
+        // }
+
+        // Rich.restorerange = function () {
+        //   var selection = window.getSelection();
+        //   selection.removeAllRanges();
+        //   try {
+        //     var range = document.createRange();
+        //     range.setStart(Rich.currentSelection.startContainer, Rich.currentSelection.startOffset);
+        //     range.setEnd(Rich.currentSelection.endContainer, Rich.currentSelection.endOffset);
+        //     selection.addRange(range);
+        //   } catch (e) {
+        //     // 容错：恢复选区失败时聚焦编辑器
+        //     Rich.focus();
+        //   }
+        // }
+
+        Rich.enabledEditingItems = function (e) {
+            var items = [];
+            if (document.queryCommandState('bold')) items.push('bold');
+            if (document.queryCommandState('italic')) items.push('italic');
+            if (document.queryCommandState('subscript')) items.push('subscript');
+            if (document.queryCommandState('superscript')) items.push('superscript');
+            if (document.queryCommandState('strikeThrough')) items.push('strikeThrough');
+            if (document.queryCommandState('underline')) items.push('underline');
+            if (document.queryCommandState('insertOrderedList')) items.push('orderedList');
+            if (document.queryCommandState('insertUnorderedList')) items.push('unorderedList');
+            if (document.queryCommandState('justifyCenter')) items.push('justifyCenter');
+            if (document.queryCommandState('justifyFull')) items.push('justifyFull');
+            if (document.queryCommandState('justifyLeft')) items.push('justifyLeft');
+            if (document.queryCommandState('justifyRight')) items.push('justifyRight');
+            if (document.queryCommandState('insertHorizontalRule')) items.push('horizontalRule');
+
+            var formatBlock = document.queryCommandValue('formatBlock');
+            if (formatBlock.length > 0) items.push(formatBlock);
+
+            window.location.href = "re-state://" + encodeURI(items.join(','));
+        }
+
+        Rich.focus = function () {
+            var range = document.createRange();
+            range.selectNodeContents(Rich.editor);
+            range.collapse(false);
+            var selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            Rich.editor.focus();
+        }
+
+        Rich.blurFocus = function () {
+            Rich.editor.blur();
+        }
+
+        // ========== 新增：清除所有格式（增强版） ==========
+        Rich.clearAllFormat = function () {
+            Rich.restorerange();
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                // 提取纯文本
+                const text = range.toString();
+                // 删除选中内容并插入纯文本
+                range.deleteContents();
+                range.insertNode(document.createTextNode(text));
+                // 恢复选区
+                range.setStartAfter(range.endContainer);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+            // 清除全局格式（如标题、列表、引用等）
+            document.execCommand('removeFormat', false, null);
+            document.execCommand('formatBlock', false, '<p>');
+            Rich.enabledEditingItems();
+            Rich.callback();
+        }
+
+        Rich.removeFormat = function () {
+            document.execCommand('removeFormat', false, null);
+            Rich.enabledEditingItems();
+            Rich.callback();
+        }
+
+        Rich.generateToc = function () {
+            const headings = Rich.editor.querySelectorAll('h1, h2, h3, h4, h5, h6');
+            if (headings.length === 0) {
+                // window.location.href = "re-toc-result://" + encodeURI('无标题内容');
+                return;
+            }
+            let tocHtml = '<div class="toc" style="border-left:3px solid #0066cc; padding:1rem; margin:1rem 0; background:#f8f9fa; border-radius:0 4px 4px 0;">';
+            headings.forEach((heading, index) => {
+                const id = `heading-${index}`;
+                heading.id = id;
+                const level = parseInt(heading.tagName.replace('H', ''));
+                const paddingLeft = (level - 1) * 15 + 'px';
+                tocHtml += `<div style="padding-left:${paddingLeft}; margin:0.3rem 0;">
+              <a href="#${id}" style="text-decoration:none; color:#0066cc;" onclick="event.preventDefault(); document.getElementById('${id}').scrollIntoView({behavior:'smooth'});">
+                  ${heading.textContent}
+              </a>
+          </div>`;
+            });
+            tocHtml += '</div>';
+            Rich.editor.insertAdjacentHTML('afterbegin', tocHtml);
+            Rich.callback();
+            //  window.location.href = "re-toc-result://" + encodeURI(`生成 ${headings.length} 个标题`);
+        }
+
+        Rich.countWords = function () {
+            const text = Rich.editor.innerText.trim();
+            const charCount = text.length;
+            const wordCount = text.split(/\s+|\W+/).filter(word => word).length;
+            const lineCount = text.split('\n').filter(line => line.trim()).length;
+            const result = { charCount, wordCount, lineCount };
+            window.location.href = "re-word-count://" + encodeURI(JSON.stringify(result));
+            return result;
+        }
+
+        Rich.toggleWordWrap = function (enabled) {
+            Rich.editor.style.whiteSpace = enabled ? 'normal' : 'nowrap';
+            Rich.editor.style.overflowX = enabled ? 'hidden' : 'auto';
+        }
+
+
+        Rich.insertDivider = function (style = "border-top:1px solid #eee; margin:1.5rem 0;") {
+            Rich.restorerange();
+            const divider = `<div style="${style}; height:0; overflow:hidden;"></div>`;
+            Rich.insertHTML(divider);
+            const newPara = document.createElement('p');
+            newPara.innerHTML = '&nbsp;';
+
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                let dividerElement = range.commonAncestorContainer;
+                dividerElement = dividerElement.nodeType === 1 ? dividerElement : dividerElement.parentNode;
+                while (dividerElement && dividerElement !== Rich.editor) {
+                    if (dividerElement.tagName && dividerElement.tagName.toLowerCase() === 'div' &&
+                        dividerElement.style.height === '0px' && dividerElement.style.overflow === 'hidden') {
+                        break;
+                    }
+                    dividerElement = dividerElement.parentNode;
+                }
+                if (dividerElement && dividerElement.parentNode) {
+                    dividerElement.parentNode.insertBefore(newPara, dividerElement.nextSibling);
+                } else {
+                    Rich.editor.appendChild(newPara);
+                }
+                const newRange = document.createRange();
+                newRange.selectNodeContents(newPara);
+                newRange.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(newRange);
+            }
+            Rich.callback();
+        }
+
+        // ========== 3. 统一图片加载失败处理：添加通用失败占位图 ==========
+        // 定义Base64格式的加载失败图片（带"图片加载失败"文字的占位图）
+        Rich.imageLoadFailedBase64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+5Zu+54mH5Yqo5Zu+5pWw5ZCRPC90ZXh0Pjwvc3ZnPg==';
+
+        Rich.insertHorizontalRule = function () {
+            Rich.restorerange();
+            document.execCommand('insertHorizontalRule', false, null);
+            Rich.callback();
+        }
+
+        Rich.setFontFamily = function (fontFamily) {
+            Rich.restorerange();
+            document.execCommand("fontName", false, fontFamily);
+            Rich.callback();
+        }
+
+        Rich.setLineHeight = function (lineHeight) {
+            Rich.restorerange();
+            document.execCommand("styleWithCSS", null, true);
+            const sel = window.getSelection();
+            if (sel.rangeCount) {
+                const range = sel.getRangeAt(0);
+                const blocks = range.commonAncestorContainer.closest('p, div, h1, h2, h3, h4, h5, h6');
+                if (blocks) {
+                    blocks.style.lineHeight = lineHeight;
+                } else {
+                    const p = document.createElement('p');
+                    p.style.lineHeight = lineHeight;
+                    range.surroundContents(p);
+                }
+            }
+            document.execCommand("styleWithCSS", null, false);
+            Rich.callback();
+        }
+
+        Rich.insertDateTime = function (type = 'datetime') {
+            Rich.restorerange();
+            const now = new Date();
+            let text = '';
+            if (type === 'date') {
+                text = now.toLocaleDateString('zh-CN'); // 强制中文格式
+            } else if (type === 'time') {
+                text = now.toLocaleTimeString('zh-CN', { hour12: false }); // 24小时制
+            } else {
+                text = now.toLocaleString('zh-CN', { hour12: false });
+            }
+            document.execCommand('insertText', false, text);
+            Rich.callback();
+        }
+
+        Rich.copy = function (isPlainText = true) {
+            try {
+                const sel = window.getSelection();
+                let content = '';
+
+                if (isPlainText) {
+                    content = sel.toString();
+                } else {
+                    // 优化带格式复制
+                    const div = document.createElement('div');
+                    div.appendChild(sel.getRangeAt(0).cloneContents());
+                    content = div.innerHTML;
+                }
+                const temp = document.createElement('textarea');
+                temp.value = content;
+                document.body.appendChild(temp);
+                temp.select();
+                document.execCommand('copy');
+                document.body.removeChild(temp);
+                window.location.href = "re-copy-result://" + encodeURI('复制成功');
+            } catch (e) {
+                console.warn('复制失败:', e);
+                window.location.href = "re-copy-result://" + encodeURI('复制失败');
+            }
+        }
+
+        Rich.deleteSelectedElement = function () {
+            try {
+                const sel = window.getSelection();
+                if (sel.rangeCount) {
+                    const range = sel.getRangeAt(0);
+                    const selectedNode = range.commonAncestorContainer;
+                    const target = selectedNode.closest('img, table, video, audio, iframe, pre, blockquote');
+                    if (target) {
+                        target.remove();
+                        Rich.callback();
+                        window.location.href = "re-delete-result://" + encodeURI('删除成功');
+                    } else {
+                        window.location.href = "re-delete-result://" + encodeURI('未选中可删除元素');
+                    }
+                }
+            } catch (e) {
+                console.warn('删除元素失败:', e);
+                window.location.href = "re-delete-result://" + encodeURI('删除失败');
+            }
+        }
+
+        Rich.checkUndoRedoState = function () {
+            const canUndo = document.queryCommandEnabled('undo');
+            const canRedo = document.queryCommandEnabled('redo');
+            window.location.href = "re-undo-redo://" + encodeURI(JSON.stringify({ canUndo, canRedo }));
+            return { canUndo, canRedo };
+        }
+
+        Rich.selectAll = function () {
+            Rich.focus();
+            document.execCommand('selectAll', false, null);
+        }
+
+        Rich.deselect = function () {
+            window.getSelection().removeAllRanges();
+        }
+
+        Rich.enableImageLazyLoad = function () {
+            const imgs = Rich.editor.querySelectorAll('img');
+            imgs.forEach(img => {
+                if (!img.hasAttribute('loading')) {
+                    img.setAttribute('loading', 'lazy');
+                }
+                img.style.maxWidth = '100%';
+                img.style.height = 'auto';
+                img.style.borderRadius = '4px';
+            });
+        }
+
+
+        // ========== 新增：表格相关功能 ==========
+        /**
+         * 插入简单表格（适配手机端）
+         * @param {number} rows - 行数（默认2）
+         * @param {number} cols - 列数（默认2）
+         */
+        Rich.insertTable = function (rows = 2, cols = 2) {
+            Rich.restorerange();
+            // 构建表格HTML
+            let tableHtml = '<table><thead><tr>';
+            // 表头
+            for (let i = 0; i < cols; i++) {
+                tableHtml += `<th>表头</th>`;
+            }
+            tableHtml += '</tr></thead><tbody>';
+            // 表体
+            for (let i = 0; i < rows - 1; i++) {
+                tableHtml += '<tr>';
+                for (let j = 0; j < cols; j++) {
+                    tableHtml += `<td contenteditable="true">内容</td>`;
+                }
+                tableHtml += '</tr>';
+            }
+            tableHtml += '</tbody></table><p>&nbsp;</p>';
+            // 插入表格
+            document.execCommand('insertHTML', false, tableHtml);
+            // 定位光标到第一个单元格
+            const tables = Rich.editor.querySelectorAll('table');
+            const lastTable = tables[tables.length - 1];
+            if (lastTable) {
+                const firstCell = lastTable.querySelector('td') || lastTable.querySelector('th');
+                if (firstCell) {
+                    const range = document.createRange();
+                    range.selectNodeContents(firstCell);
+                    range.collapse(true);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                    firstCell.classList.add('editing');
+                }
+            }
+            Rich.callback();
+            Rich.enabledEditingItems();
+        }
+
+        /**
+         * 修改表格行列
+         * @param {string} action - 操作类型：addRow/addCol/deleteRow/deleteCol
+         */
+        Rich.editTable = function (action) {
+            Rich.restorerange();
+            const selection = window.getSelection();
+            if (!selection.rangeCount) return;
+
+            const range = selection.getRangeAt(0);
+            const table = range.commonAncestorContainer.closest('table');
+            if (!table) {
+                window.location.href = "re-table-error://" + encodeURI('未选中表格');
+                return;
+            }
+
+            const tbody = table.querySelector('tbody') || table;
+            const rows = tbody.querySelectorAll('tr');
+            const firstRow = rows[0];
+            const cells = firstRow ? firstRow.querySelectorAll('td, th') : [];
+            const colCount = cells.length;
+
+            switch (action) {
+                case 'addRow':
+                    const newRow = document.createElement('tr');
+                    for (let i = 0; i < colCount; i++) {
+                        newRow.innerHTML += `<td contenteditable="true">新内容</td>`;
+                    }
+                    tbody.appendChild(newRow);
+                    break;
+                case 'addCol':
+                    rows.forEach(row => {
+                        row.innerHTML += `<td contenteditable="true">新列</td>`;
+                    });
+                    break;
+                case 'deleteRow':
+                    if (rows.length > 1) {
+                        tbody.removeChild(rows[rows.length - 1]);
+                    } else {
+                        window.location.href = "re-table-error://" + encodeURI('至少保留一行');
+                    }
+                    break;
+                case 'deleteCol':
+                    if (colCount > 1) {
+                        rows.forEach(row => {
+                            const lastCell = row.querySelectorAll('td, th')[colCount - 1];
+                            row.removeChild(lastCell);
+                        });
+                    } else {
+                        window.location.href = "re-table-error://" + encodeURI('至少保留一列');
+                    }
+                    break;
+                default:
+                    window.location.href = "re-table-error://" + encodeURI('不支持的操作');
+            }
+
+            Rich.callback();
+            window.location.href = "re-table-success://" + encodeURI(`表格${action}成功`);
+        }
+        // ========== 1. 文本高亮标记 ==========
+        /**
+         * 高亮选中文本
+         * @param {string} color - 高亮颜色（默认黄色）
+         */
+        Rich.highlightText = function (color = '#fff3cd') {
+            Rich.restorerange();
+            document.execCommand("styleWithCSS", null, true);
+            document.execCommand('hiliteColor', false, color);
+            document.execCommand("styleWithCSS", null, false);
+            Rich.enabledEditingItems();
+            Rich.callback();
+        }
+
+        /**
+         * 移除高亮
+         */
+        Rich.removeHighlight = function () {
+            Rich.restorerange();
+            document.execCommand("styleWithCSS", null, true);
+            document.execCommand('hiliteColor', false, 'transparent');
+            document.execCommand("styleWithCSS", null, false);
+            Rich.enabledEditingItems();
+            Rich.callback();
+        }
+
+        // ========== 2. 可折叠区域 ==========
+        /**
+         * 插入可折叠区域
+         * @param {string} title - 折叠区标题
+         * @param {string} content - 折叠区内容
+         */
+        Rich.insertCollapsible = function (title = '点击展开/收起', content = '这里是可折叠内容') {
+            Rich.restorerange();
+            const id = 'collapse-' + Date.now();
+            const html = `
+    <div class="collapsible-section" >
+      <div class="collapsible-header" onclick="Rich.toggleCollapse('${id}')">
+        <span>${title}</span>
+        <span class="collapse-icon" id="${id}-icon">▼</span>
+      </div>
+      <div class="collapsible-content" id="${id}" style="white-space: pre-wrap; word-wrap: break-word;">
+        ${content}
+      </div>
+    </div>
+    <p>&nbsp;</p>
+  `;
+            document.execCommand('insertHTML', false, html);
+            Rich.callback();
+        }
+
+        /**
+         * 切换折叠状态
+         * @param {string} id - 折叠区ID
+         */
+        Rich.toggleCollapse = function (id) {
+            const content = document.getElementById(id);
+            const icon = document.getElementById(id + '-icon');
+            if (content && icon) {
+                content.classList.toggle('expanded');
+                icon.classList.toggle('expanded');
+            }
+        }
+
+        // ========== 3. 标签插入 ==========
+        /**
+         * 插入标签
+         * @param {string} text - 标签文本
+         * @param {string} type - 标签类型：default/success/warning/danger
+         */
+        Rich.insertTag = function (text, type = 'default') {
+            Rich.restorerange();
+            const className = type === 'default' ? 'tag' : `tag tag-${type}`;
+            const html = `<span class="${className}" style="white-space: pre-wrap; word-wrap: break-word;">${text}</span>&nbsp;<p>&nbsp;</p>`;
+            document.execCommand('insertHTML', false, html);
+            Rich.enabledEditingItems();
+            Rich.callback();
+        }
+
+        // ========== 4. 进度条 ==========
+        /**
+         * 插入进度条
+         * @param {number} percentage - 进度百分比（0-100）
+         * @param {string} label - 进度条标签文本
+         */
+        Rich.insertProgressBar = function (percentage = 50, label = '') {
+            Rich.restorerange();
+            const displayText = label || `${percentage}%`;
+            const html = `
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" style="width: ${percentage}%;">
+        ${displayText}
+      </div>
+    </div>
+    <p>&nbsp;</p>
+  `;
+            document.execCommand('insertHTML', false, html);
+            Rich.callback();
+        }
+
+        // ========== 5. 信息卡片 ==========
+        /**
+         * 插入信息卡片
+         * @param {string} title - 卡片标题
+         * @param {string} content - 卡片内容
+         */
+        Rich.insertInfoCard = function (title = '标题', content = '卡片内容') {
+            Rich.restorerange();
+            const html = `
+    <div class="info-card">
+      <div class="info-card-header">${title}</div>
+      <div class="info-card-body">${content}</div>
+    </div>
+    <p>&nbsp;</p>
+  `;
+            document.execCommand('insertHTML', false, html);
+            Rich.callback();
+        }
+
+        // ========== 6. 徽章 ==========
+        /**
+         * 插入徽章
+         * @param {string} text - 徽章文本
+         * @param {string} type - 徽章类型：primary/success/warning/danger
+         */
+        Rich.insertBadge = function (text, type = 'primary') {
+            Rich.restorerange();
+            const html = `<span class="badge badge-${type}">${text}</span>&nbsp;`;
+            document.execCommand('insertHTML', false, html);
+            Rich.callback();
+        }
+
+        // ========== 7. 时间轴 ==========
+        /**
+         * 插入时间轴项
+         * @param {Array} items - 时间轴项数组 [{time: '09:00', content: '事件'}]
+         */
+        Rich.insertTimeline = function (items = []) {
+            Rich.restorerange();
+            if (!items.length) {
+                items = [
+                    { time: '09:00', content: '第一件事' },
+                    { time: '12:00', content: '第二件事' },
+                    { time: '18:00', content: '第三件事' }
+                ];
+            }
+
+            let timelineHtml = '<div class="timeline">';
+            items.forEach(item => {
+                timelineHtml += `
+      <div class="timeline-item">
+        <div class="timeline-time">${item.time}</div>
+        <div class="timeline-content">${item.content}</div>
+      </div>
+    `;
+            });
+            timelineHtml += '</div><p>&nbsp;</p>';
+
+            document.execCommand('insertHTML', false, timelineHtml);
+            Rich.callback();
+        }
+
+        // ========== 8. 提示框 ==========
+        /**
+         * 插入提示框
+         * @param {string} message - 提示信息
+         * @param {string} type - 提示类型：info/success/warning/danger
+         */
+        Rich.insertAlert = function (message, type = 'info') {
+            Rich.restorerange();
+            const html = `
+    <div class="alert alert-${type}">
+      ${message}
+    </div>
+    <p>&nbsp;</p>
+  `;
+            document.execCommand('insertHTML', false, html);
+            Rich.callback();
+        }
+
+        // ========== 9. 步骤条 ==========
+        /**
+         * 插入步骤条
+         * @param {Array} steps - 步骤数组 [{label: '步骤1', status: 'completed'}]
+         * status: active/completed/pending
+         */
+        Rich.insertSteps = function (steps = []) {
+            Rich.restorerange();
+            if (!steps.length) {
+                steps = [
+                    { label: '步骤1', status: 'completed' },
+                    { label: '步骤2', status: 'active' },
+                    { label: '步骤3', status: 'pending' }
+                ];
+            }
+
+            let stepsHtml = '<div class="steps">';
+            steps.forEach((step, index) => {
+                stepsHtml += `
+      <div class="step ${step.status}">
+        <div class="step-circle">${index + 1}</div>
+        <div class="step-label">${step.label}</div>
+      </div>
+    `;
+            });
+            stepsHtml += '</div><p>&nbsp;</p>';
+
+            document.execCommand('insertHTML', false, stepsHtml);
+            Rich.callback();
+        }
+
+        // ========== 11. 文本转换 ==========
+        /**
+         * 转换选中文本大小写
+         * @param {string} type - 转换类型：upper/lower/capitalize
+         */
+        Rich.transformText = function (type) {
+            const selection = window.getSelection();
+            if (!selection.toString()) return;
+
+            let text = selection.toString();
+            switch (type) {
+                case 'upper':
+                    text = text.toUpperCase();
+                    break;
+                case 'lower':
+                    text = text.toLowerCase();
+                    break;
+                case 'capitalize':
+                    text = text.replace(/\b\w/g, l => l.toUpperCase());
+                    break;
+            }
+
+            document.execCommand('insertText', false, text);
+            Rich.callback();
+        }
+
+        // ========== 12. 查找替换 ==========
+        /**
+         * 查找并高亮文本
+         * @param {string} searchText - 要查找的文本
+         * @param {string} highlightColor - 高亮颜色
+         */
+        Rich.findAndHighlight = function (searchText, highlightColor = '#ffeb3b') {
+            if (!searchText) return;
+
+            const content = Rich.editor.innerHTML;
+            const regex = new RegExp(searchText, 'gi');
+            const newContent = content.replace(regex, match =>
+                `<mark style="background-color: ${highlightColor};">${match}</mark>`
+            );
+
+            Rich.editor.innerHTML = newContent;
+            Rich.callback();
+
+            const count = (content.match(regex) || []).length;
+            window.location.href = "re-find-result://" + encodeURI(`找到 ${count} 处匹配`);
+        }
+
+        /**
+         * 替换文本
+         * @param {string} searchText - 要查找的文本
+         * @param {string} replaceText - 替换文本
+         * @param {boolean} replaceAll - 是否全部替换
+         */
+        Rich.replaceText = function (searchText, replaceText, replaceAll = false) {
+            if (!searchText) return;
+
+            const content = Rich.editor.innerHTML;
+            const regex = new RegExp(searchText, replaceAll ? 'gi' : 'i');
+            const newContent = content.replace(regex, replaceText);
+
+            Rich.editor.innerHTML = newContent;
+            Rich.callback();
+
+            window.location.href = "re-replace-result://" + encodeURI('替换完成');
+        }
+
+        // ========== 13. 文本对齐方式扩展 ==========
+        /**
+         * 设置文本垂直对齐
+         * @param {string} align - 对齐方式：baseline/sub/super/text-top/text-bottom
+         */
+        Rich.setVerticalTextAlign = function (align) {
+            Rich.restorerange();
+            document.execCommand("styleWithCSS", null, true);
+            const selection = window.getSelection();
+            if (selection.rangeCount) {
+                const range = selection.getRangeAt(0);
+                const span = document.createElement('span');
+                span.style.verticalAlign = align;
+                range.surroundContents(span);
+            }
+            document.execCommand("styleWithCSS", null, false);
+            Rich.callback();
+        }
+
+        // ========== 14. 锚点链接 ==========
+        /**
+         * 插入锚点
+         * @param {string} anchorName - 锚点名称
+         */
+        Rich.insertAnchor = function (anchorName) {
+            Rich.restorerange();
+            const html = `<a id="${anchorName}" name="${anchorName}"></a>`;
+            document.execCommand('insertHTML', false, html);
+            Rich.callback();
+        }
+
+        /**
+         * 跳转到锚点
+         * @param {string} anchorName - 锚点名称
+         */
+        Rich.scrollToAnchor = function (anchorName) {
+            const anchor = document.getElementById(anchorName);
+            if (anchor) {
+                anchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // ========== 15. 内容统计增强 ==========
+        /**
+         * 获取详细内容统计
+         * @returns {Object} 统计信息
+         */
+        Rich.getDetailedStats = function () {
+            const text = Rich.editor.innerText;
+            const html = Rich.editor.innerHTML;
+
+            const stats = {
+                characters: text.length,
+                charactersNoSpaces: text.replace(/\s/g, '').length,
+                words: text.split(/\s+/).filter(w => w).length,
+                lines: text.split('\n').filter(l => l.trim()).length,
+                paragraphs: Rich.editor.querySelectorAll('p').length,
+                images: Rich.editor.querySelectorAll('img').length,
+                links: Rich.editor.querySelectorAll('a').length,
+                tables: Rich.editor.querySelectorAll('table').length,
+                lists: Rich.editor.querySelectorAll('ul, ol').length
+            };
+
+            window.location.href = "re-stats://" + encodeURI(JSON.stringify(stats));
+            return stats;
+        }
+
+        // ========== 16. 快捷格式刷 ==========
+        /**
+         * 复制格式
+         */
+        Rich.copyFormat = function () {
+            const selection = window.getSelection();
+            if (!selection.rangeCount) return;
+
+            const range = selection.getRangeAt(0);
+            const element = range.commonAncestorContainer.nodeType === 1
+                ? range.commonAncestorContainer
+                : range.commonAncestorContainer.parentElement;
+
+            // 保存格式信息
+            Rich.copiedFormat = {
+                fontSize: window.getComputedStyle(element).fontSize,
+                fontFamily: window.getComputedStyle(element).fontFamily,
+                fontWeight: window.getComputedStyle(element).fontWeight,
+                fontStyle: window.getComputedStyle(element).fontStyle,
+                color: window.getComputedStyle(element).color,
+                backgroundColor: window.getComputedStyle(element).backgroundColor,
+                textDecoration: window.getComputedStyle(element).textDecoration
+            };
+
+            window.location.href = "re-format-copied://" + encodeURI('格式已复制');
+        }
+
+        /**
+         * 粘贴格式
+         */
+        Rich.pasteFormat = function () {
+            if (!Rich.copiedFormat) {
+                window.location.href = "re-format-error://" + encodeURI('未复制格式');
+                return;
+            }
+
+            Rich.restorerange();
+            const selection = window.getSelection();
+            if (selection.rangeCount) {
+                const range = selection.getRangeAt(0);
+                const span = document.createElement('span');
+                Object.assign(span.style, Rich.copiedFormat);
+
+                try {
+                    range.surroundContents(span);
+                } catch (e) {
+                    console.warn('格式应用失败:', e);
+                }
+            }
+
+            Rich.callback();
+            window.location.href = "re-format-pasted://" + encodeURI('格式已应用');
+        }
+
+        // ========== 17. 移动端手势优化 ==========
+        /**
+         * 启用双击选词
+         */
+        Rich.enableDoubleTapSelect = function () {
+            let lastTap = 0;
+            Rich.editor.addEventListener('touchend', function (e) {
+                const currentTime = new Date().getTime();
+                const tapLength = currentTime - lastTap;
+                if (tapLength < 300 && tapLength > 0) {
+                    // 双击选中当前词
+                    const selection = window.getSelection();
+                    selection.modify('move', 'backward', 'word');
+                    selection.modify('extend', 'forward', 'word');
+                    e.preventDefault();
+                }
+                lastTap = currentTime;
+            });
+        }
+        // ========== 20. 撤销/重做栈大小控制 ==========
+        /**
+         * 设置最大撤销步数
+         * @param {number} maxSteps - 最大步数
+         */
+        Rich.setMaxUndoSteps = function (maxSteps = 50) {
+            // 这个功能需要自定义撤销栈，浏览器原生execCommand有限制
+            Rich.maxUndoSteps = maxSteps;
+            window.location.href = "re-undo-config://" + encodeURI(`撤销步数设置为 ${maxSteps}`);
+        }
+
+        // 初始化双击选词
+        // Rich.enableDoubleTapSelect();
+        /**
+     * 初始化移动端图片交互（轻触放大、保存）
+     */
+        Rich.initMobileImageInteraction = function () {
+            // 避免重复绑定
+            if (Rich.imageInteractionInited) return;
+            Rich.imageInteractionInited = true;
+
+            // 创建图片预览层
+            if (!document.getElementById('image-preview-layer')) {
+                const previewLayer = document.createElement('div');
+                previewLayer.id = 'image-preview-layer';
+                previewLayer.style.cssText = `
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.9); z-index: 9999; display: none;
+      align-items: center; justify-content: center;
+      touch-action: none; -webkit-touch-callout: none;
+    `;
+                previewLayer.innerHTML = `
+      <img id="preview-img" style="max-width: 90%; max-height: 90%; object-fit: contain;" />
+      <div style="position: absolute; top: 20px; right: 20px; color: white; font-size: 24px; cursor: pointer;" onclick="Rich.hideImagePreview()">×</div>
+      <div style="position: absolute; top: 50px; left: 0; right: 0; text-align: center;">
+        <button style="background: #666; color: white; border: none; padding: 8px 16px; border-radius: 4px; margin: 0 18px;" onclick="Rich.saveImageToAlbum()">保存图片</button>
+        <button style="background: #666; color: white; border: none; padding: 8px 16px; border-radius: 4px; margin: 0 18px;" onclick="Rich.hideImagePreview()">关闭图片</button>
+      </div>
+    `;
+                document.body.appendChild(previewLayer);
+            }
+            // 定义长按定时器
+            let longPressTimer = null;
+            // 长按判定时间（毫秒），可根据需求调整
+            const LONG_PRESS_TIME = 2000;
+            // 绑定图片点击事件
+            Rich.editor.addEventListener('touchstart', function (e) {
+                if (e.target.tagName === 'IMG') {
+                    window.location.href = "re-state-html://" + encodeURI("图片被长按了");
+                    // 启动定时器，达到时间后执行长按逻辑
+                    longPressTimer = setTimeout(() => {
+                        console.log('图片被长按了！');
+                        Rich.showImagePreview(e.target.src);
+                        // 这里可以写你需要的长按逻辑，比如显示操作菜单、保存图片等
+                    }, LONG_PRESS_TIME);
+
+                }
+            });
+            // 触摸结束事件
+            Rich.editor.addEventListener('touchend', function (e) {
+                // 清除定时器，判定为普通触摸结束
+                if (e.target.tagName === 'IMG') {
+                    clearTimeout(longPressTimer);
+                }
+            });
+
+        };
+
+        /**
+         * 显示图片预览（移动端放大）
+         * @param {string} imgSrc - 图片地址
+         */
+        Rich.showImagePreview = function (imgSrc) {
+            const previewImg = document.getElementById('preview-img');
+            const previewLayer = document.getElementById('image-preview-layer');
+            previewImg.src = imgSrc;
+            previewLayer.style.display = 'flex';
+            // 禁止页面滚动
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
+        };
+
+        /**
+         * 隐藏图片预览
+         */
+        Rich.hideImagePreview = function () {
+            const previewLayer = document.getElementById('image-preview-layer');
+            previewLayer.style.display = 'none';
+            // 恢复页面滚动
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+        };
+
+        /**
+         * 保存图片到相册（移动端适配）
+         */
+        Rich.saveImageToAlbum = function () {
+            const previewImg = document.getElementById('preview-img');
+            const imgSrc = previewImg.src;
+
+            // 通知原生端处理保存（Web端仅提示）
+            if (/^data:image/.test(imgSrc)) {
+                // base64图片处理
+                window.location.href = "re-save-image://" + encodeURI(imgSrc);
+            } else {
+                // 网络图片处理
+                window.location.href = "re-save-image://" + encodeURI(imgSrc);
+            }
+
+            Rich.hideImagePreview();
+        };
+        /**
+         * 插入移动端常用模板
+         * @param {string} templateType - 模板类型：todo/contact/address/table/schedule/code/quote
+         * @param {Object} [data={}] - 模板填充数据
+         */
+        Rich.insertMobileTemplate = function (templateType, data = {}) {
+            Rich.restorerange();
+            let html = '';
+
+            switch (templateType) {
+                // 待办清单模板（移动端适配）
+                case 'todo':
+                    html = `
+        <div class="mobile-todo" style="padding: 8px 12px; background: #f5f5f5; border-radius: 6px; margin: 8px 0;">
+          <div style="margin: 4px 0;"><input type="checkbox" style="width: 16px; height: 16px; margin-right: 8px;"> ${data.title || '待办事项1'}</div>
+          <div style="margin: 4px 0;"><input type="checkbox" style="width: 16px; height: 16px; margin-right: 8px;"> ${data.subtitle || '待办事项2'}</div>
+        </div>
+        <p>&nbsp;</p>
+      `;
+                    break;
+
+                // 联系方式模板
+                case 'contact':
+                    html = `
+        <div style="padding: 10px; border: 1px solid #eee; border-radius: 6px; margin: 8px 0;">
+          <div style="font-weight: bold; margin-bottom: 6px;">${data.name || '联系人'}</div>
+          <div style="margin: 4px 0;">📞 电话：${data.phone || '13800138000'}</div>
+          <div style="margin: 4px 0;">📧 邮箱：${data.email || 'example@mail.com'}</div>
+          <div style="margin: 4px 0;">📍 地址：${data.address || '北京市朝阳区'}</div>
+        </div>
+        <p>&nbsp;</p>
+      `;
+                    break;
+
+                // 地址模板
+                case 'address':
+                    html = `
+        <div style="padding: 10px; background: #f8f9fa; border-radius: 6px; margin: 8px 0;">
+          <div style="color: #666; font-size: 14px; margin-bottom: 4px;">📍 地址信息</div>
+          <div style="line-height: 1.5;">
+            ${data.province || '北京市'}${data.city || '朝阳区'}${data.detail || '某某大厦1号楼101室'}
+          </div>
+        </div>
+        <p>&nbsp;</p>
+      `;
+                    break;
+
+                // 简易表格模板（移动端适配）
+                case 'table':
+                    html = `
+        <table style="width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 14px;">
+          <tr style="background: #f5f5f5;">
+            <th style="padding: 8px; border: 1px solid #eee; text-align: left;">${data.col1 || '列1'}</th>
+            <th style="padding: 8px; border: 1px solid #eee; text-align: left;">${data.col2 || '列2'}</th>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid #eee;">${data.val1 || '内容1'}</td>
+            <td style="padding: 8px; border: 1px solid #eee;">${data.val2 || '内容2'}</td>
+          </tr>
+        </table>
+        <p>&nbsp;</p>
+      `;
+                    break;
+
+                // 日程模板
+                case 'schedule':
+                    html = `
+        <div style="background: #e8f4f8; padding: 10px; border-radius: 6px; margin: 8px 0;">
+          <div style="font-weight: bold; color: #2d3748; margin-bottom: 6px;">📅 ${data.date || new Date().toLocaleDateString()}</div>
+          <div style="margin: 4px 0;">▌${data.time1 || '09:00'} - ${data.time2 || '10:00'}：${data.event1 || '会议'}</div>
+          <div style="margin: 4px 0;">▌${data.time3 || '14:00'} - ${data.time4 || '15:00'}：${data.event2 || '工作汇报'}</div>
+        </div>
+        <p>&nbsp;</p>
+      `;
+                    break;
+
+                // 移动端代码块模板
+                case 'code':
+                    html = `
+        <pre style="background: #f5f5f5; padding: 10px; border-radius: 6px; font-size: 13px; overflow-x: auto; margin: 8px 0;" data-lang="${data.lang || 'js'}">
+          <code>${data.code || '// 请输入代码内容\nconsole.log("Hello World");'}</code>
+        </pre>
+        <p>&nbsp;</p>
+      `;
+                    break;
+
+                // 引用模板
+                case 'quote':
+                    html = `
+        <blockquote style="border-left: 3px solid #4299e1; padding: 8px 12px; background: #f5f8ff; border-radius: 0 4px 4px 0; margin: 8px 0;">
+          <div style="color: #2d3748; font-size: 14px; line-height: 1.5;">
+            ${data.content || '引用内容...'}
+          </div>
+          <div style="color: #718096; font-size: 12px; margin-top: 6px;">
+            —— ${data.source || '来源未知'}
+          </div>
+        </blockquote>
+        <p>&nbsp;</p>
+      `;
+                    break;
+
+                default:
+                    window.location.href = "re-template-error://" + encodeURI('不支持的模板类型');
+                    return;
+            }
+
+            document.execCommand('insertHTML', false, html);
+            Rich.callback();
+            window.location.href = "re-template-success://" + encodeURI(`模板【${templateType}】插入成功`);
+        };
+
+        /**
+     * 初始化数学公式渲染（移动端适配）
+     */
+        Rich.initMathJax = function () {
+            // 动态加载MathJax库
+            if (!document.getElementById('mathjax-script')) {
+                const script = document.createElement('script');
+                script.id = 'mathjax-script';
+                script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+                script.async = true;
+                script.onload = function () {
+                    MathJax.config({
+                        tex: {
+                            inlineMath: [['$', '$'], ['\\(', '\\)']], // 行内公式标识
+                            displayMath: [['$$', '$$'], ['\\[', '\\]']] // 块级公式标识
+                        },
+                        chtml: {
+                            scale: 1.2, // 移动端放大适配
+                            displayAlign: 'center' // 居中显示
+                        },
+                        startup: {
+                            pageReady: function () {
+                                return MathJax.startup.defaultPageReady().then(function () {
+                                    window.location.href = "re-mathjax-ready://" + encodeURI('MathJax初始化完成');
+                                });
+                            }
+                        }
+                    });
+                    MathJax.startup.getComponents();
+                };
+                script.onerror = function () {
+                    window.location.href = "re-mathjax-error://" + encodeURI('MathJax加载失败');
+                };
+                document.head.appendChild(script);
+            }
+        };
+
+        /**
+         * 插入数学公式（移动端适配）
+         * @param {string} formula - 公式内容（如：E=mc^2）
+         * @param {boolean} isBlock - 是否块级公式（true:$$包裹，false:$包裹）
+         */
+        Rich.insertMathFormula = function (formula, isBlock = false) {
+            Rich.restorerange();
+            const wrapChar = isBlock ? '$$' : '$';
+            const formulaText = `${wrapChar}${formula}${wrapChar}`;
+            document.execCommand('insertText', false, formulaText);
+
+            // 触发公式重新渲染
+            if (window.MathJax) {
+                MathJax.typesetPromise([Rich.editor]).catch(err => console.error('公式渲染失败:', err));
+            }
+
+            Rich.callback();
+            window.location.href = "re-formula-insert://" + encodeURI('公式插入成功');
+        };
+        // ========== 新增：快捷换行（手机端友好） ==========
+        /**
+         * 插入软换行（不新建段落）
+         */
+        Rich.insertSoftBreak = function () {
+            Rich.restorerange();
+            document.execCommand('insertHTML', false, '<br>');
+            Rich.callback();
+        }
+        // // ========== 新增：Markdown相关接口 ==========
+        // /**
+        //  * 设置Markdown文本并实时渲染为富文本
+        //  * @param {string} markdownText - 原始Markdown文本
+        //  * @param {boolean} isEncode - 是否需要解码（默认true，适配Flutter传参）
+        //  */
+        // Rich.setMarkdown = function (markdownText, isEncode = true) {
+        //   try {
+        //     // 解码（适配Flutter传递的编码后的Markdown）
+        //     const rawMd = isEncode ? decodeURIComponent(markdownText.replace(/\+/g, '%20')) : markdownText;
+        //     // 解析Markdown为HTML
+        //     const html = Rich.marked.parse(rawMd);
+        //     // 设置到编辑器并触发回调
+        //     Rich.editor.innerHTML = html;
+        //     Rich.enableImageLazyLoad();
+        //     Rich.callback();
+        //   } catch (e) {
+        //     console.error('Markdown解析失败:', e);
+        //    // window.location.href = "re-markdown-error://" + encodeURI('Markdown解析失败');
+        //   }
+        // }
+
+        // /**
+        //  * 获取编辑器内容的Markdown格式
+        //  * @returns {string} 编码后的Markdown文本（方便Flutter接收）
+        //  */
+        // Rich.getMarkdown = function () {
+        //   try {
+        //     // 将HTML转为Markdown
+        //     const markdown = Rich.turndownService.turndown(Rich.editor.innerHTML);
+        //     // 编码后返回（适配Flutter接收）
+        //     return encodeURIComponent(markdown);
+        //   } catch (e) {
+        //     console.error('HTML转Markdown失败:', e);
+        //     return encodeURIComponent('');
+        //   }
+        // }
+
+        // /**
+        //  * 实时同步Markdown输入（Flutter端输入Markdown时调用，实时渲染）
+        //  * @param {string} markdownText - 实时输入的Markdown文本
+        //  */
+        // Rich.syncMarkdown = function (markdownText) {
+        //   Rich.setMarkdown(markdownText);
+        //   // 触发状态更新
+        //   Rich.enabledEditingItems();
+        //   Rich.checkUndoRedoState();
+        // }
+        /**
+         * 
+         * 
+      
+     * 注入自定义HTML内容（包含CSS/JS）
+     * @param {Object} options - 注入配置
+     * @param {string} [options.html=''] - 要注入的HTML内容（可包含标签）
+     * @param {string} [options.css=''] - 要注入的CSS样式（纯样式文本，无需<style>标签）
+     * @param {string} [options.js=''] - 要注入的JS脚本（纯脚本文本，无需<script>标签）
+     * @param {string} [options.injectPosition='editor'] - 注入位置：editor(编辑器内) | body(页面body) | head(页面head)
+     * @param {boolean} [options.clearExisting=false] - 是否清空目标位置原有内容（仅injectPosition为editor时生效）
+     */
+        Rich.injectCustomContent = function (options = {}) {
+            try {
+                const {
+                    html = '',
+                    css = '',
+                    js = '',
+                    injectPosition = 'editor',
+                    clearExisting = false
+                } = options;
+                // 1. 注入CSS样式
+                if (css) {
+                    const styleTag = document.createElement('style');
+                    styleTag.type = 'text/css';
+                    styleTag.innerHTML = css;
+                    document.head.appendChild(styleTag);
+                }
+                // 2. 注入HTML内容
+                let targetElement;
+                switch (injectPosition) {
+                    case 'editor':
+                        targetElement = Rich.editor;
+                        if (clearExisting) {
+                            targetElement.innerHTML = html;
+                        } else {
+                            Rich.insertHTML(html);
+                        }
+                        // 为新注入的图片自动添加删除按钮
+                        Rich.addDeleteButtonToAllImages();
+                        // 为新注入的图片启用懒加载
+                        Rich.enableImageLazyLoad();
+                        break;
+                    case 'body':
+                        targetElement = document.body;
+                        targetElement.insertAdjacentHTML('beforeend', html);
+                        break;
+                    case 'head':
+                        targetElement = document.head;
+                        targetElement.insertAdjacentHTML('beforeend', html);
+                        break;
+                    default:
+                        throw new Error('无效的注入位置，可选值：editor/body/head');
+                }
+
+                // 3. 注入并执行JS脚本
+                if (js) {
+                    const scriptTag = document.createElement('script');
+                    scriptTag.type = 'text/javascript';
+                    // 处理脚本内容，支持Rich对象调用
+                    scriptTag.innerHTML = `(function() {
+        try {
+          ${js}
+        } catch (e) {
+          console.error('自定义脚本执行失败:', e);
+          window.location.href = "re-inject-error://" + encodeURI('脚本执行失败：' + e.message);
+        }
+      })()`;
+                    document.body.appendChild(scriptTag);
+                    // 执行后移除脚本标签（可选，避免重复执行）
+                    scriptTag.remove();
+                }
+
+                // 触发回调通知注入成功
+                Rich.callback();
+                window.location.href = "re-inject-success://" + encodeURI('自定义内容注入成功');
+            } catch (error) {
+                console.error('自定义内容注入失败:', error);
+                window.location.href = "re-inject-error://" + encodeURI('注入失败：' + error.message);
+            }
+        }
+
+        /**
+         * 简化版注入API（仅注入完整HTML字符串）
+         * @param {string} fullHtml - 完整的HTML字符串（可包含<style>、<script>标签）
+         * @param {string} [injectPosition='editor'] - 注入位置
+         */
+        Rich.injectFullHtml = function (fullHtml, injectPosition = 'editor') {
+            Rich.injectCustomContent({
+                html: fullHtml,
+                injectPosition,
+                clearExisting: false
+            });
+        }
+
+        // ========== 新增：代码块专用接口 ==========
+        /**
+         * 插入指定语言的代码块insertCodeBlock
+         * @param {string} lang - 代码语言（如javascript、dart、python，默认plain）
+         * @param {string} code - 代码内容（可选，默认空）
+         */
+        Rich.insertCodeBlock = function (lang = 'plain') {
+            Rich.restorerange();
+            // 紧凑的HTML结构（无多余换行），并内置自动换行样式
+            const codeHtml = `<pre data-lang="${lang || 'plain'}" style="white-space: pre-wrap; word-wrap: break-word; overflow-x: hidden; position: relative;"><code style="white-space: pre-wrap; word-wrap: break-word;">&nbsp;</code></pre><p>&nbsp;</p>`;
+            // 插入代码块
+            document.execCommand('insertHTML', false, codeHtml);
+            // 将光标定位到代码块内
+            const selection = window.getSelection();
+            const preElements = Rich.editor.querySelectorAll('pre');
+            const lastPre = preElements[preElements.length - 1];
+            if (lastPre) {
+                const codeElement = lastPre.querySelector('code');
+                const range = document.createRange();
+                range.selectNodeContents(codeElement);
+                range.collapse(true); // 光标定位到代码块开头（更符合输入习惯）
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+            Rich.callback();
+            Rich.enabledEditingItems();
+        }
+        /**
+         * 修改选中代码块的语言
+         * @param {string} newLang - 新的代码语言
+         */
+        Rich.setCodeBlockLanguage = function (newLang) {
+            const selection = window.getSelection();
+            if (!selection.rangeCount) return;
+
+            // 查找选中的代码块
+            const range = selection.getRangeAt(0);
+            let preElement = range.commonAncestorContainer;
+            preElement = preElement.nodeType === 1 ? preElement : preElement.parentNode;
+            while (preElement && preElement !== Rich.editor) {
+                if (preElement.tagName && preElement.tagName.toLowerCase() === 'pre') {
+                    break;
+                }
+                preElement = preElement.parentNode;
+            }
+
+            // 修改语言标识
+            if (preElement) {
+                preElement.setAttribute('data-lang', newLang || 'plain');
+                Rich.callback();
+                window.location.href = "re-code-lang://" + encodeURI(`代码块语言已改为：${newLang}`);
+            } else {
+                window.location.href = "re-code-lang://" + encodeURI('未选中代码块');
+            }
+        }
+
+        /**
+         * 转义HTML特殊字符（防止代码注入）
+         * @param {string} text - 需要转义的文本
+         * @returns {string} 转义后的文本
+         */
+        Rich.escapeHtml = function (text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        let wordCountTimer = null;
+        Rich.editor.addEventListener('input', function () {
+            clearTimeout(wordCountTimer);
+            wordCountTimer = setTimeout(() => {
+                Rich.callback();
+                Rich.countWords();
+                Rich.enabledEditingItems();
+                Rich.checkUndoRedoState(); // 实时检测撤销/重做状态
+            }, 200);
+        });
+
+        Rich.editor.addEventListener("keyup", function (e) {
+            var KEY_LEFT = 37, KEY_RIGHT = 39;
+            if (e.which == KEY_LEFT || e.which == KEY_RIGHT) {
+                Rich.enabledEditingItems(e);
+            }
+
+        });
+
+        Rich.editor.addEventListener("click", function () {
+            Rich.enabledEditingItems();
+            Rich.checkUndoRedoState();
+            Rich.hideImageActionLayer();
+        });
+
+        Rich.pasteAsPlainText = false; // 可由外部控制
+        Rich.editor.addEventListener('paste', function (e) {
+            if (Rich.pasteAsPlainText) {
+                e.preventDefault();
+                const text = e.clipboardData.getData('text/plain');
+                document.execCommand('insertText', false, text);
+                Rich.callback();
+            }
+        });
+        Rich.setPlaceholder("想输入点什么");
+        Rich.enableImageLazyLoad();
+        // Rich.initMobileImageInteraction();
+        Rich.checkUndoRedoState(); // 初始检测撤销/重做状态
+
+    </script>
+</body>
+
+</html>

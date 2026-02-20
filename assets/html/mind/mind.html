@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <title>在线思维导图</title>
+    <meta charset="utf-8">
+    <!-- 关键优化1：适配移动端视口，解决Flutter WebView尺寸问题 -->
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- 引入 jsMind 样式 -->
+    <link type="text/css" rel="stylesheet" href="./jsmind/style/jsmind.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            /* 移除移动端点击高亮 */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            touch-action: manipulation;
+            /* 优化移动端触摸行为 */
+        }
+
+        html {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            /* 禁用浏览器默认触摸行为，避免冲突 */
+        }
+
+        #jsmind_container {
+            width: 100vw;
+            height: 100vh;
+            background: #ffffff;
+            border-radius: 0;
+            box-shadow: none;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            touch-action: none;
+            /* 关键：禁用默认触摸行为，自定义处理 */
+            -webkit-user-select: none;
+            /* 禁用文本选择 */
+            user-select: none;
+        }
+
+        #jsmind_container .jsmind-inner {
+            overflow: hidden !important;
+        }
+
+        #jsmind_container canvas {
+            overflow: hidden !important;
+        }
+
+        #jsmind_container jmnodes {
+            overflow: hidden !important;
+        }
+
+        /* 关键优化2：工具栏适配移动端，改为底部固定更易操作 */
+        .toolbar {
+            position: fixed;
+            bottom: 20px;
+            /* 移动端底部更易触摸 */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            /* 确保flex布局生效 */
+            flex-wrap: wrap;
+            /* 强制换行适配小屏 */
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            /* 兼容iOS */
+            padding: 12px 20px;
+            border-radius: 50px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 90vw;
+            /* 限制最大宽度 */
+        }
+
+        .toolbar button,
+        .toolbar .button {
+            padding: 12px 18px;
+            /* 增大点击区域 */
+            border: none;
+            border-radius: 25px;
+            background: #6c5ce7;
+            color: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 70px;
+            /* 减小最小宽度适配小屏 */
+            min-height: 44px;
+            /* 符合移动端最小点击区域标准 */
+            box-shadow: 0 2px 8px rgba(108, 92, 231, 0.3);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .toolbar button:hover,
+        .toolbar .button:hover {
+            background: #5f3dc4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(108, 92, 231, 0.4);
+        }
+
+        .toolbar button:active,
+        .toolbar .button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(108, 92, 231, 0.3);
+            background: #5f3dc4;
+            /* 增加点击反馈 */
+        }
+
+        /* 为不同功能的按钮设置不同颜色 */
+        .toolbar button:nth-child(1) {
+            background: #00b894;
+            box-shadow: 0 2px 8px rgba(0, 184, 148, 0.3);
+        }
+
+        .toolbar button:nth-child(1):hover,
+        .toolbar button:nth-child(1):active {
+            background: #00a085;
+            box-shadow: 0 4px 16px rgba(0, 184, 148, 0.4);
+        }
+
+        .toolbar button:nth-child(2) {
+            background: #e17055;
+            box-shadow: 0 2px 8px rgba(225, 112, 85, 0.3);
+        }
+
+        .toolbar button:nth-child(2):hover,
+        .toolbar button:nth-child(2):active {
+            background: #d63031;
+            box-shadow: 0 4px 16px rgba(225, 112, 85, 0.4);
+        }
+
+        .toolbar button:nth-child(3) {
+            background: #fdcb6e;
+            color: #2d3436;
+            box-shadow: 0 2px 8px rgba(253, 203, 110, 0.3);
+        }
+
+        .toolbar button:nth-child(3):hover,
+        .toolbar button:nth-child(3):active {
+            background: #f39c12;
+            box-shadow: 0 4px 16px rgba(253, 203, 110, 0.4);
+        }
+
+        .toolbar button:nth-child(4) {
+            background: #74b9ff;
+            box-shadow: 0 2px 8px rgba(116, 185, 255, 0.3);
+        }
+
+        .toolbar button:nth-child(4):hover,
+        .toolbar button:nth-child(4):active {
+            background: #0984e3;
+            box-shadow: 0 4px 16px rgba(116, 185, 255, 0.4);
+        }
+
+        .toolbar button:nth-child(5) {
+            background: #a29bfe;
+            box-shadow: 0 2px 8px rgba(162, 155, 254, 0.3);
+        }
+
+        .toolbar button:nth-child(5):hover,
+        .toolbar button:nth-child(5):active {
+            background: #6c5ce7;
+            box-shadow: 0 4px 16px rgba(162, 155, 254, 0.4);
+        }
+
+        .toolbar button:nth-child(6) {
+            background: #fd79a8;
+            box-shadow: 0 2px 8px rgba(253, 121, 168, 0.3);
+        }
+
+        .toolbar button:nth-child(6):hover,
+        .toolbar button:nth-child(6):active {
+            background: #e84393;
+            box-shadow: 0 4px 16px rgba(253, 121, 168, 0.4);
+        }
+
+        .toolbar .button {
+            background: #55a3ff;
+            box-shadow: 0 2px 8px rgba(85, 163, 255, 0.3);
+        }
+
+        .toolbar .button:hover,
+        .toolbar .button:active {
+            background: #3742fa;
+            box-shadow: 0 4px 16px rgba(85, 163, 255, 0.4);
+        }
+
+        /* 隐藏文件输入框 */
+        #importFile {
+            display: none;
+        }
+
+        /* 关键优化3：深度响应式适配，覆盖更多移动设备尺寸 */
+        @media (max-width: 768px) {
+            .toolbar {
+                flex-wrap: wrap;
+                gap: 6px;
+                padding: 10px 15px;
+                bottom: 10px;
+                /* 适配小屏底部间距 */
+                border-radius: 20px;
+                /* 小屏圆角更和谐 */
+            }
+
+            .toolbar button,
+            .toolbar .button {
+                padding: 10px 12px;
+                font-size: 12px;
+                min-width: 60px;
+                min-height: 40px;
+            }
+        }
+
+        /* 适配超小屏手机 */
+        @media (max-width: 375px) {
+            .toolbar {
+                gap: 4px;
+                padding: 8px 10px;
+            }
+
+            .toolbar button,
+            .toolbar .button {
+                padding: 8px 10px;
+                font-size: 11px;
+                min-width: 50px;
+                min-height: 38px;
+            }
+        }
+
+        /* 思维导图节点样式优化 */
+        jmnode {
+            border-radius: 8px !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+            min-height: 40px;
+            /* 增大节点触摸区域 */
+            min-width: 80px;
+            padding: 8px 12px !important;
+        }
+
+        /* 右键菜单样式 - 适配移动端 */
+        .context-menu {
+            position: fixed;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 0;
+            z-index: 10000;
+            display: none;
+            min-width: 180px;
+            /* 增大菜单宽度适配触摸 */
+            max-width: 80vw;
+            /* 限制最大宽度 */
+        }
+
+        .context-menu-item {
+            padding: 14px 20px;
+            /* 增大菜单项触摸区域 */
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #2d3436;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 44px;
+            /* 符合移动端触摸标准 */
+        }
+
+        .context-menu-item:hover {
+            background: rgba(108, 92, 231, 0.1);
+            color: #6c5ce7;
+        }
+
+        .context-menu-item.disabled {
+            color: #b2bec3;
+            cursor: not-allowed;
+        }
+
+        .context-menu-item.disabled:hover {
+            background: none;
+            color: #b2bec3;
+        }
+
+        .context-menu-separator {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.1);
+            margin: 4px 0;
+        }
+
+        /* 图标样式 */
+        .menu-icon {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+        }
+
+        /* 缩放指示器优化 - 适配移动端 */
+        #zoomIndicator {
+            font-size: 18px !important;
+            padding: 12px 24px !important;
+            border-radius: 25px !important;
+        }
+
+        /* 关键：添加长按反馈样式 */
+        .longpress-active {
+            opacity: 0.8;
+            transform: scale(0.98);
+        }
+
+        /* 适配Flutter WebView的滚动条隐藏 */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 工具栏 -->
+    <div class="toolbar">
+        <button onclick="addNode()" title="添加子节点">添加子节点</button>
+        <button onclick="removeNode()" title="删除节点">删除节点</button>
+        <button onclick="editNode()" title="编辑节点">编辑节点</button>
+        <button onclick="saveDataToLocal()" title="保存">保存</button>
+        <button onclick="downloadData()" title="导出">导出</button>
+        <button onclick="saveAsImage()" title="保存为图片">保存为图片</button>
+        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importDataFromFile(event)">
+        <label for="importFile" class="button" title="导入数据">导入数据</label>
+    </div>
+
+    <!-- 右键菜单 -->
+    <div id="contextMenu" class="context-menu">
+        <div class="context-menu-item" onclick="createNewMindMap()">
+            <span class="menu-icon">🆕</span>
+            <span>新建思维导图</span>
+        </div>
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item" onclick="addNode()">
+            <span class="menu-icon">➕</span>
+            <span>添加子节点</span>
+        </div>
+        <div class="context-menu-item" onclick="editNode()">
+            <span class="menu-icon">✏️</span>
+            <span>编辑节点</span>
+        </div>
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item" onclick="removeNode()">
+            <span class="menu-icon">🗑️</span>
+            <span>删除节点</span>
+        </div>
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item" onclick="openLocalFile()">
+            <span class="menu-icon">📂</span>
+            <span>打开本地文件</span>
+        </div>
+        <div class="context-menu-item" onclick="saveToLocalFile()">
+            <span class="menu-icon">💾</span>
+            <span>保存到本地文件</span>
+        </div>
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item" onclick="saveAsImage()">
+            <span class="menu-icon">📷</span>
+            <span>保存为图片</span>
+        </div>
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item" onclick="generateShareURL()">
+            <span class="menu-icon">🔗</span>
+            <span>生成分享链接</span>
+        </div>
+    </div>
+
+    <!-- 隐藏的文件输入 -->
+    <input type="file" id="openFile" accept=".json" style="display: none;" onchange="openLocalFileHandler(event)">
+    <a id="downloadLink" style="display: none;"></a>
+    <!-- 思维导图容器 -->
+    <div id="jsmind_container"></div>
+
+    <script src="./jsmind/js-legacy/jsmind.js"></script>
+    <script src="./jsmind/js-legacy/jsmind.draggable-node.js"></script>
+    <script src="./jsmind/js-legacy/jsmind.screenshot.js"></script>
+    <script>
+        // 初始化思维导图
+        let jm = null;
+        let contextMenu = null;
+        let selectedNode = null;
+        let currentFileName = null; // 当前文件名
+        let isModified = false; // 是否已修改
+        // 移动端触摸相关变量
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchStartTime = 0;
+        let isLongPress = false;
+        let longPressTimer = null;
+        let lastTouchDistance = 0; // 记录双指距离，用于缩放
+
+        const initMindMap = () => {
+            const options = {
+                container: 'jsmind_container',
+                editable: true,
+                theme: 'white',
+            };
+
+            // 尝试从URL参数获取数据，否则使用默认数据
+            let data = loadDataFromURL() || getDefaultMindMapData();
+
+            jm = new jsMind(options);
+            jm.show(data);
+
+            // 初始化右键菜单和事件监听
+            // initContextMenu();
+            initDoubleClickHandler();
+            initModificationTracking();
+            initMouseControls();
+            // 关键优化4：初始化移动端触摸事件
+            initTouchControls();
+
+            // 更新标题
+            updateTitle();
+        }
+
+        // 从URL参数加载数据
+        function loadDataFromURL() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const jsonParam = urlParams.get('data') || urlParams.get('json');
+
+                if (jsonParam) {
+                    // URL解码
+                    const decodedJson = decodeURIComponent(jsonParam);
+                    const data = JSON.parse(decodedJson);
+
+                    // 验证数据格式
+                    if (validateMindMapData(data)) {
+                        // 设置文件名（如果有meta.name）
+                        if (data.meta && data.meta.name) {
+                            currentFileName = data.meta.name;
+                        }
+
+                        // 显示成功提示
+                        setTimeout(() => {
+                            showZoomIndicator('从URL加载成功');
+                        }, 500);
+
+                        return data;
+                    } else {
+                        throw new Error('数据格式不正确');
+                    }
+                }
+            } catch (error) {
+                console.error('URL参数解析失败:', error);
+
+                // 显示错误提示
+                setTimeout(() => {
+                    alert('JSON字符串有误：' + error.message);
+                    showZoomIndicator('JSON解析失败');
+                }, 500);
+            }
+
+            return null;
+        }
+
+        // 验证思维导图数据格式
+        function validateMindMapData(data) {
+            // 检查基本结构
+            if (!data || typeof data !== 'object') {
+                return false;
+            }
+
+            // 检查必需字段
+            if (!data.format || !data.data) {
+                return false;
+            }
+
+            // 检查根节点
+            if (!data.data.id || !data.data.topic) {
+                return false;
+            }
+
+            return true;
+        }
+
+        // 获取默认思维导图数据
+        function getDefaultMindMapData() {
+            return {
+                "meta": {
+                    "name": "新建思维导图",
+                    "author": "user",
+                    "version": "1.0"
+                },
+                "format": "node_tree",
+                "data": {
+                    "id": "root",
+                    "topic": "中心主题",
+                    "children": []
+                }
+            };
+        }
+
+        // 更新页面标题
+        function updateTitle() {
+            const fileName = currentFileName || "新建思维导图";
+            const modified = isModified ? " *" : "";
+            document.title = `${fileName}${modified} - 在线思维导图`;
+        }
+
+        // 初始化修改跟踪
+        function initModificationTracking() {
+            // 监听思维导图的修改事件
+            const container = document.getElementById('jsmind_container');
+
+            // 使用MutationObserver监听DOM变化
+            const observer = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    if (mutation.type === 'childList' || mutation.type === 'attributes') {
+                        markAsModified();
+                    }
+                });
+            });
+
+            observer.observe(container, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: ['style', 'class']
+            });
+        }
+
+        // 标记为已修改
+        function markAsModified() {
+            if (!isModified) {
+                isModified = true;
+                updateTitle();
+            }
+        }
+
+        // 标记为未修改
+        function markAsUnmodified() {
+            isModified = false;
+            updateTitle();
+        }
+
+        // 添加子节点
+        function addNode() {
+            const targetNode = selectedNode || jm.get_selected_node();
+            if (targetNode) {
+                const nodeId = Date.now().toString();
+                jm.add_node(targetNode.id, nodeId, '新增子节点', {});
+                markAsModified();
+                hideContextMenu();
+            }
+        }
+
+        // 删除节点
+        function removeNode() {
+            const targetNode = selectedNode || jm.get_selected_node();
+            if (targetNode && targetNode.id !== 'root') {
+                jm.remove_node(targetNode);
+                markAsModified();
+                hideContextMenu();
+            }
+        }
+
+        // 编辑节点 - 优化移动端输入体验
+        function editNode() {
+            const targetNode = selectedNode || jm.get_selected_node();
+            if (targetNode) {
+                // 关键优化：适配移动端输入框
+                const newText = prompt('输入新内容', targetNode.topic);
+                if (newText !== null && newText !== targetNode.topic) { // 处理取消按钮
+                    jm.update_node(targetNode.id, newText);
+                    markAsModified();
+                }
+                hideContextMenu();
+            }
+        }
+
+        // 新建思维导图
+        function createNewMindMap() {
+            if (isModified) {
+                const confirmed = confirm("当前思维导图已修改，是否保存？");
+                if (confirmed) {
+                    saveToLocalFile();
+                    return; // 用户可能取消了保存，不继续新建
+                }
+            }
+
+            const data = getDefaultMindMapData();
+            jm.show(data);
+            currentFileName = null;
+            markAsUnmodified();
+            hideContextMenu();
+
+            // 提示用户
+            setTimeout(() => {
+                alert("新建思维导图成功！");
+            }, 100);
+        }
+
+        // 打开本地文件
+        function openLocalFile() {
+            if (isModified) {
+                const confirmed = confirm("当前思维导图已修改，是否保存？");
+                if (confirmed) {
+                    saveToLocalFile();
+                    return; // 用户可能取消了保存，不继续打开
+                }
+            }
+
+            document.getElementById('openFile').click();
+            hideContextMenu();
+        }
+
+        // 处理打开本地文件
+        function openLocalFileHandler(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const mindData = JSON.parse(e.target.result);
+                    jm.show(mindData);
+                    currentFileName = file.name.replace('.json', '');
+                    markAsUnmodified();
+                    alert("文件打开成功！");
+                } catch (error) {
+                    alert("文件格式错误，请选择有效的JSON文件。");
+                    console.error("解析文件失败:", error);
+                }
+            };
+            reader.readAsText(file);
+
+            // 清空input值，允许重复选择同一文件
+            event.target.value = '';
+        }
+
+        // 保存到本地文件
+        function saveToLocalFile() {
+            const mindData = jm.get_data();
+            const dataStr = JSON.stringify(mindData, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const downloadLink = document.getElementById('downloadLink');
+            const fileName = currentFileName || '思维导图';
+            downloadLink.href = url;
+            downloadLink.download = `${fileName}.json`;
+            downloadLink.click();
+
+            // 清理URL对象
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
+            }, 100);
+
+            // 如果是新文件，设置文件名
+            if (!currentFileName) {
+                currentFileName = fileName;
+            }
+
+            markAsUnmodified();
+            hideContextMenu();
+
+            // 提示用户
+            setTimeout(() => {
+                alert("文件保存成功！");
+            }, 100);
+        }
+
+        // 生成分享链接
+        function generateShareURL() {
+            try {
+                const mindData = jm.get_data();
+                const jsonString = JSON.stringify(mindData);
+                const encodedJson = encodeURIComponent(jsonString);
+
+                // 构建分享URL
+                const baseURL = window.location.origin + window.location.pathname;
+                const shareURL = `${baseURL}?data=${encodedJson}`;
+
+                // 复制到剪贴板 - 适配移动端
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(shareURL).then(() => {
+                        alert('分享链接已复制到剪贴板！其他人可以通过此链接直接查看您的思维导图。');
+                    }).catch(() => {
+                        showShareURLDialog(shareURL);
+                    });
+                } else {
+                    showShareURLDialog(shareURL);
+                }
+
+                hideContextMenu();
+            } catch (error) {
+                alert('生成分享链接失败：' + error.message);
+            }
+        }
+
+        // 显示分享链接对话框
+        function showShareURLDialog(url) {
+            const dialog = prompt('分享链接已生成，请复制：', url);
+            if (dialog !== null) {
+                alert('请手动复制上面的链接进行分享。');
+            }
+        }
+
+        function saveAsImage() {
+            // 保存原始的水印函数
+            const originalWatermark = jm.screenshot._watermark;
+
+            // 临时替换水印函数，使用自定义文本
+            jm.screenshot._watermark = function () {
+                var c = this.canvas_elem;
+                var ctx = this.canvas_ctx;
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'bottom';
+                ctx.fillStyle = '#000';
+                ctx.font = '11px Verdana,Arial,Helvetica,sans-serif';
+
+                // 使用自定义文本替代原来的URL
+                ctx.fillText('1_bit', c.width - 5.5, c.height - 2.5);
+
+                // 左下角也可以显示自定义文本，或者留空
+                ctx.textAlign = 'left';
+                // ctx.fillText('1_bit', 5.5, c.height - 2.5); // 如果需要左下角也显示
+            };
+
+            // 执行截图
+            jm.screenshot.shootDownload();
+
+            // 恢复原始的水印函数
+            jm.screenshot._watermark = originalWatermark;
+
+            hideContextMenu();
+        }
+
+        // 初始化右键菜单
+        function initContextMenu() {
+            contextMenu = document.getElementById('contextMenu');
+            const container = document.getElementById('jsmind_container');
+
+            // 右键菜单事件（桌面端）
+            container.addEventListener('contextmenu', function (e) {
+                e.preventDefault();
+
+                // 获取点击的节点
+                const clickedElement = e.target.closest('jmnode');
+                if (clickedElement) {
+                    const nodeId = clickedElement.getAttribute('nodeid');
+                    selectedNode = jm.get_node(nodeId);
+                    jm.select_node(selectedNode);
+                } else {
+                    selectedNode = null;
+                }
+
+                // 显示右键菜单
+                showContextMenu(e.clientX, e.clientY);
+            });
+
+            // 点击其他地方隐藏菜单
+            document.addEventListener('click', function (e) {
+                if (!contextMenu.contains(e.target)) {
+                    hideContextMenu();
+                }
+            });
+
+            // 滚动时隐藏菜单
+            window.addEventListener('scroll', hideContextMenu);
+            window.addEventListener('resize', hideContextMenu);
+        }
+
+        // 显示右键菜单
+        function showContextMenu(x, y) {
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = x + 'px';
+            contextMenu.style.top = y + 'px';
+
+            // 确保菜单不会超出屏幕 - 适配移动端
+            const rect = contextMenu.getBoundingClientRect();
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            // 水平方向适配
+            if (rect.right > windowWidth) {
+                contextMenu.style.left = Math.max(0, x - rect.width) + 'px';
+            }
+            // 垂直方向适配
+            if (rect.bottom > windowHeight) {
+                contextMenu.style.top = Math.max(0, y - rect.height) + 'px';
+            }
+
+            // 根据是否选中节点来启用/禁用菜单项
+            updateContextMenuItems();
+        }
+
+        // 隐藏右键菜单
+        function hideContextMenu() {
+            contextMenu.style.display = 'none';
+            // 清除长按计时器
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
+            isLongPress = false;
+        }
+
+        // 更新右键菜单项状态
+        function updateContextMenuItems() {
+            const menuItems = contextMenu.querySelectorAll('.context-menu-item');
+            const hasSelectedNode = selectedNode !== null;
+            const isRootNode = selectedNode && selectedNode.id === 'root';
+
+            // 新建思维导图 - 始终可用
+            // menuItems[0] - 新建思维导图
+
+            // 添加子节点 - 需要选中节点
+            menuItems[2].classList.toggle('disabled', !hasSelectedNode);
+            menuItems[2].style.pointerEvents = hasSelectedNode ? 'auto' : 'none'; // 移动端禁用点击
+
+            // 编辑节点 - 需要选中节点
+            menuItems[3].classList.toggle('disabled', !hasSelectedNode);
+            menuItems[3].style.pointerEvents = hasSelectedNode ? 'auto' : 'none';
+
+            // 删除节点 - 需要选中节点且不是根节点
+            menuItems[5].classList.toggle('disabled', !hasSelectedNode || isRootNode);
+            menuItems[5].style.pointerEvents = (hasSelectedNode && !isRootNode) ? 'auto' : 'none';
+
+            // 其他功能项始终可用
+            // menuItems[7] - 打开本地文件
+            // menuItems[8] - 保存到本地文件
+            // menuItems[10] - 保存为图片
+        }
+
+        // 初始化双击事件处理
+        function initDoubleClickHandler() {
+            const container = document.getElementById('jsmind_container');
+
+            container.addEventListener('dblclick', function (e) {
+                const clickedElement = e.target.closest('jmnode');
+                if (clickedElement) {
+                    const nodeId = clickedElement.getAttribute('nodeid');
+                    const node = jm.get_node(nodeId);
+                    jm.select_node(node);
+                    selectedNode = node;
+
+                    // 双击节点时添加子节点
+                    addNode();
+                } else {
+                    // 双击空白区域重置视图
+                    setTimeout(() => {
+                        const nodesContainer = container.querySelector('jmnodes');
+                        const canvasElements = container.querySelectorAll('canvas');
+
+                        if (nodesContainer) {
+                            const resetTransform = 'translate(0px, 0px) scale(1)';
+                            nodesContainer.style.transform = resetTransform;
+                            canvasElements.forEach(canvas => {
+                                canvas.style.transform = resetTransform;
+                            });
+                            showZoomIndicator('重置视图');
+                        }
+                    }, 10);
+                }
+            });
+        }
+
+        // 添加键盘快捷键支持
+        document.addEventListener('keydown', function (e) {
+            // 阻止默认行为，避免与Flutter WebView冲突
+            if (e.ctrlKey) {
+                switch (e.key) {
+                    case 'n': e.preventDefault(); createNewMindMap(); break;
+                    case 'o': e.preventDefault(); openLocalFile(); break;
+                    case 's': e.preventDefault(); saveToLocalFile(); break;
+                }
+            }
+        });
+
+        // 页面关闭前提醒保存 - 适配Flutter WebView
+        window.addEventListener('beforeunload', function (e) {
+            if (isModified) {
+                e.preventDefault();
+                e.returnValue = '您有未保存的修改，确定要离开吗？';
+                return e.returnValue;
+            }
+        });
+
+        // 初始化鼠标控制功能（桌面端）
+        function initMouseControls() {
+            const container = document.getElementById('jsmind_container');
+            let scale = 1;
+            let isDragging = false;
+            let dragStartX = 0;
+            let dragStartY = 0;
+            let containerStartX = 0;
+            let containerStartY = 0;
+
+            // 等待jsMind完全初始化
+            setTimeout(() => {
+                // 获取思维导图的节点容器
+                const nodesContainer = container.querySelector('jmnodes');
+                const canvasElements = container.querySelectorAll('canvas');
+
+                if (!nodesContainer) return;
+
+                // 设置初始样式 - 只对节点容器和画布进行变换
+                nodesContainer.style.transformOrigin = 'center center';
+                nodesContainer.style.transition = 'transform 0.1s ease-out';
+
+                canvasElements.forEach(canvas => {
+                    canvas.style.transformOrigin = 'center center';
+                    canvas.style.transition = 'transform 0.1s ease-out';
+                });
+
+                // 鼠标滚轮缩放功能
+                container.addEventListener('wheel', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                    const newScale = Math.max(0.3, Math.min(3, scale + delta));
+
+                    if (newScale !== scale) {
+                        scale = newScale;
+
+                        // 只缩放节点容器和画布，不缩放整个容器
+                        const transform = `translate(${containerStartX}px, ${containerStartY}px) scale(${scale})`;
+                        nodesContainer.style.transform = transform;
+                        canvasElements.forEach(canvas => {
+                            canvas.style.transform = transform;
+                        });
+
+                        // 显示缩放提示
+                        showZoomIndicator(Math.round(scale * 100) + '%');
+                    }
+                }, { passive: false });
+
+                // 鼠标中键按下开始拖拽
+                container.addEventListener('mousedown', function (e) {
+                    if (e.button === 1) { // 中键
+                        e.preventDefault();
+                        isDragging = true;
+                        dragStartX = e.clientX;
+                        dragStartY = e.clientY;
+
+                        // 改变鼠标样式
+                        container.style.cursor = 'grabbing';
+                        nodesContainer.style.transition = 'none';
+                        canvasElements.forEach(canvas => {
+                            canvas.style.transition = 'none';
+                        });
+                    }
+                });
+
+                // 鼠标移动时拖拽
+                container.addEventListener('mousemove', function (e) {
+                    if (isDragging) {
+                        e.preventDefault();
+
+                        const deltaX = e.clientX - dragStartX;
+                        const deltaY = e.clientY - dragStartY;
+
+                        const newX = containerStartX + deltaX;
+                        const newY = containerStartY + deltaY;
+
+                        const transform = `translate(${newX}px, ${newY}px) scale(${scale})`;
+                        nodesContainer.style.transform = transform;
+                        canvasElements.forEach(canvas => {
+                            canvas.style.transform = transform;
+                        });
+                    }
+                });
+
+                // 鼠标释放结束拖拽
+                container.addEventListener('mouseup', function (e) {
+                    if (e.button === 1 && isDragging) {
+                        isDragging = false;
+
+                        // 更新位置状态
+                        const deltaX = e.clientX - dragStartX;
+                        const deltaY = e.clientY - dragStartY;
+                        containerStartX += deltaX;
+                        containerStartY += deltaY;
+
+                        container.style.cursor = 'default';
+                        nodesContainer.style.transition = 'transform 0.1s ease-out';
+                        canvasElements.forEach(canvas => {
+                            canvas.style.transition = 'transform 0.1s ease-out';
+                        });
+                    }
+                });
+
+                // 防止中键点击的默认行为（如打开链接）
+                container.addEventListener('auxclick', function (e) {
+                    if (e.button === 1) {
+                        e.preventDefault();
+                    }
+                });
+
+                // 鼠标离开容器时结束拖拽
+                container.addEventListener('mouseleave', function (e) {
+                    if (isDragging) {
+                        isDragging = false;
+                        container.style.cursor = 'default';
+                        nodesContainer.style.transition = 'transform 0.1s ease-out';
+                        canvasElements.forEach(canvas => {
+                            canvas.style.transition = 'transform 0.1s ease-out';
+                        });
+                    }
+                });
+
+            }, 100); // 延迟100ms确保jsMind完全初始化
+        }
+
+        // 关键优化5：初始化移动端触摸控制
+        function initTouchControls() {
+            const container = document.getElementById('jsmind_container');
+            let scale = 1;
+            let containerStartX = 0;
+            let containerStartY = 0;
+            let isTouchDragging = false;
+            let touchDragStartX = 0;
+            let touchDragStartY = 0;
+
+            setTimeout(() => {
+                const nodesContainer = container.querySelector('jmnodes');
+                const canvasElements = container.querySelectorAll('canvas');
+
+                if (!nodesContainer) return;
+
+                // 触摸开始事件
+                container.addEventListener('touchstart', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const touches = e.touches;
+
+                    // 单指触摸 - 拖拽或长按
+                    if (touches.length === 1) {
+                        // 记录触摸起始位置和时间
+                        touchStartX = touches[0].clientX;
+                        touchStartY = touches[0].clientY;
+                        touchStartTime = Date.now();
+                        isTouchDragging = true;
+                        touchDragStartX = touchStartX - containerStartX;
+                        touchDragStartY = touchStartY - containerStartY;
+
+                        // 长按检测（300ms）
+                        longPressTimer = setTimeout(() => {
+                            isLongPress = true;
+                            // 获取触摸的节点
+                            const element = document.elementFromPoint(touchStartX, touchStartY);
+                            const clickedElement = element.closest('jmnode');
+
+                            if (clickedElement) {
+                                const nodeId = clickedElement.getAttribute('nodeid');
+                                selectedNode = jm.get_node(nodeId);
+                                jm.select_node(selectedNode);
+                            } else {
+                                selectedNode = null;
+                            }
+
+                            // 显示右键菜单
+                            showContextMenu(touchStartX, touchStartY);
+                        }, 300);
+
+                        // 移除过渡效果，使拖拽更流畅
+                        nodesContainer.style.transition = 'none';
+                        canvasElements.forEach(canvas => {
+                            canvas.style.transition = 'none';
+                        });
+                    }
+                    // 双指触摸 - 缩放
+                    else if (touches.length === 2) {
+                        // 清除长按计时器
+                        if (longPressTimer) {
+                            clearTimeout(longPressTimer);
+                            longPressTimer = null;
+                        }
+
+                        // 计算初始双指距离
+                        const touch1 = touches[0];
+                        const touch2 = touches[1];
+                        lastTouchDistance = getDistance(touch1, touch2);
+                    }
+                }, { passive: false });
+
+                // 触摸移动事件
+                container.addEventListener('touchmove', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const touches = e.touches;
+
+                    // 如果是长按状态，不处理移动
+                    if (isLongPress) return;
+
+                    // 单指拖拽
+                    if (touches.length === 1 && isTouchDragging) {
+                        const touch = touches[0];
+                        const currentX = touch.clientX;
+                        const currentY = touch.clientY;
+
+                        // 计算新的位置
+                        containerStartX = currentX - touchDragStartX;
+                        containerStartY = currentY - touchDragStartY;
+
+                        // 应用变换
+                        const transform = `translate(${containerStartX}px, ${containerStartY}px) scale(${scale})`;
+                        nodesContainer.style.transform = transform;
+                        canvasElements.forEach(canvas => {
+                            canvas.style.transform = transform;
+                        });
+                    }
+                    // 双指缩放
+                    else if (touches.length === 2) {
+                        const touch1 = touches[0];
+                        const touch2 = touches[1];
+                        const currentDistance = getDistance(touch1, touch2);
+
+                        // 计算缩放比例
+                        if (lastTouchDistance > 0) {
+                            const scaleDelta = currentDistance / lastTouchDistance;
+                            const newScale = Math.max(0.3, Math.min(3, scale * scaleDelta));
+
+                            if (newScale !== scale) {
+                                scale = newScale;
+
+                                // 应用缩放
+                                const transform = `translate(${containerStartX}px, ${containerStartY}px) scale(${scale})`;
+                                nodesContainer.style.transform = transform;
+                                canvasElements.forEach(canvas => {
+                                    canvas.style.transform = transform;
+                                });
+
+                                // 更新最后距离
+                                lastTouchDistance = currentDistance;
+                            }
+                        }
+                    }
+                }, { passive: false });
+
+                // 触摸结束事件
+                container.addEventListener('touchend', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // 清除长按计时器
+                    if (longPressTimer) {
+                        clearTimeout(longPressTimer);
+                        longPressTimer = null;
+                    }
+
+                    // 如果不是长按，且触摸时间很短（点击）
+                    if (!isLongPress && Date.now() - touchStartTime < 300) {
+                        // 处理单击事件 - 选中节点
+                        const touches = e.changedTouches;
+                        if (touches.length === 1) {
+                            const touch = touches[0];
+                            const element = document.elementFromPoint(touch.clientX, touch.clientY);
+                            const clickedElement = element.closest('jmnode');
+
+                            if (clickedElement) {
+                                const nodeId = clickedElement.getAttribute('nodeid');
+                                selectedNode = jm.get_node(nodeId);
+                                jm.select_node(selectedNode);
+                            }
+                        }
+                    }
+
+                    // 恢复过渡效果
+                    nodesContainer.style.transition = 'transform 0.1s ease-out';
+                    canvasElements.forEach(canvas => {
+                        canvas.style.transition = 'transform 0.1s ease-out';
+                    });
+
+                    // 重置状态
+                    isTouchDragging = false;
+                    isLongPress = false;
+                    lastTouchDistance = 0;
+                }, { passive: false });
+
+                // 触摸取消事件（如来电、弹窗）
+                container.addEventListener('touchcancel', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // 清理所有状态
+                    if (longPressTimer) {
+                        clearTimeout(longPressTimer);
+                        longPressTimer = null;
+                    }
+                    isTouchDragging = false;
+                    isLongPress = false;
+                    lastTouchDistance = 0;
+
+                    // 恢复过渡效果
+                    nodesContainer.style.transition = 'transform 0.1s ease-out';
+                    canvasElements.forEach(canvas => {
+                        canvas.style.transition = 'transform 0.1s ease-out';
+                    });
+                }, { passive: false });
+
+            }, 100);
+
+            // 计算两点之间的距离
+            function getDistance(touch1, touch2) {
+                const dx = touch2.clientX - touch1.clientX;
+                const dy = touch2.clientY - touch1.clientY;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
+        }
+
+        // 显示缩放指示器
+        function showZoomIndicator(text) {
+            // 移除已存在的指示器
+            const existingIndicator = document.getElementById('zoomIndicator');
+            if (existingIndicator) {
+                existingIndicator.remove();
+            }
+
+            // 创建新的指示器
+            const indicator = document.createElement('div');
+            indicator.id = 'zoomIndicator';
+            indicator.textContent = text;
+            indicator.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            z-index: 10001;
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+            /* 移动端适配 */
+            font-size: 18px;
+            padding: 12px 24px;
+            border-radius: 25px;
+        `;
+
+            document.body.appendChild(indicator);
+
+            // 1秒后淡出并移除
+            setTimeout(() => {
+                indicator.style.opacity = '0';
+                setTimeout(() => {
+                    if (indicator.parentNode) {
+                        indicator.remove();
+                    }
+                }, 300);
+            }, 1000);
+        }
+
+        // 兼容Flutter WebView的导出/保存函数
+        function saveDataToLocal() {
+            saveToLocalFile();
+        }
+
+        function downloadData() {
+            saveToLocalFile();
+        }
+
+        // 关键：Flutter WebView通信支持（如果需要）
+        window.addEventListener('message', function (event) {
+            // 接收来自Flutter的消息
+            try {
+                const data = JSON.parse(event.data);
+                switch (data.action) {
+                    case 'loadMindMap':
+                        jm.show(data.payload);
+                        break;
+                    case 'saveMindMap':
+                        const mindData = jm.get_data();
+                        // 发送数据回Flutter
+                        window.parent.postMessage(JSON.stringify({
+                            action: 'mindMapSaved',
+                            payload: mindData
+                        }), '*');
+                        break;
+                    case 'newMindMap':
+                        createNewMindMap();
+                        break;
+                }
+            } catch (e) {
+                console.error('处理Flutter消息失败:', e);
+            }
+        });
+
+        // 初始化
+        window.onload = function () {
+            // 确保DOM完全加载
+            setTimeout(initMindMap, 0);
+            // 通知Flutter页面已加载完成
+            if (window.parent) {
+                window.parent.postMessage(JSON.stringify({
+                    action: 'pageLoaded',
+                    payload: true
+                }), '*');
+            }
+        };
+
+        // 关键：防止Flutter WebView中的事件冲突
+        document.addEventListener('touchmove', function (e) {
+            if (isTouchDragging || isLongPress) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    </script>
+</body>
+
+</html>

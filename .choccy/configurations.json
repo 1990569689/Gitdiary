@@ -1,0 +1,47 @@
+{
+  "runConfigs": [
+    {
+      "id": "1770269595851",
+      "name": "Flutter 运行",
+      "languageId": "dart",
+      "templateId": "flutter_run",
+      "toolchainId": null,
+      "values": {
+        "mode": "release",
+        "target": "lib/main.dart"
+      },
+      "beforeRunCommands": [],
+      "androidRunMode": "cli"
+    },
+    {
+      "id": "1770269631589",
+      "name": "Flutter win运行",
+      "languageId": "dart",
+      "templateId": "flutter_run",
+      "toolchainId": null,
+      "values": {
+        "device": "windows",
+        "mode": "release",
+        "target": "lib/main.dart"
+      },
+      "beforeRunCommands": [],
+      "androidRunMode": "cli"
+    },
+    {
+      "id": "1770269652747",
+      "name": "Flutter 构建",
+      "languageId": "dart",
+      "templateId": "flutter_build",
+      "toolchainId": null,
+      "values": {
+        "platform": "apk",
+        "mode": "release",
+        "target": "lib/main.dart",
+        "splitPerAbi": "false"
+      },
+      "beforeRunCommands": [],
+      "androidRunMode": "cli"
+    }
+  ],
+  "activeRunConfigId": "1770269631589"
+}

@@ -1,0 +1,45 @@
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://maven.aliyun.com/repository/public' }
+      maven { url 'https://maven.aliyun.com/repository/central' }
+      maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+      maven { url 'https://developer.huawei.com/repo/' }
+      gradlePluginPortal()
+      maven { url 'https://maven.aliyun.com/nexus/content/repositories/google' }
+      maven { url 'https://maven.aliyun.com/repository/public' }
+      maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter' }
+      maven { url 'https://jitpack.io' }
+      maven { url 'https://maven.aliyun.com/repository/public' }
+      maven { url 'https://maven.aliyun.com/repository/central' }
+      maven { url 'https://maven.aliyun.com/repository/google' }
+      maven { url 'https://maven.aliyun.com/repository/public' }
+      maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+      maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+      maven { url 'https://repo1.maven.org/maven2/' }
+      maven { url 'https://maven.aliyun.com/repository/google' }
+      maven { url 'https://maven.aliyun.com/repository/jcenter' }
+      maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
+      maven { url "https://download.flutter.io" }
+      maven { url 'https://maven.aliyun.com/repository/google' }
+      maven { url 'https://maven.aliyun.com/repository/jcenter' }
+      maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
+      maven { url 'https://storage.flutter-io.cn/download.flutter.io' }
+      google()
+      mavenCentral()
+      jcenter() // Warning: this repository is going to shut down soon
+    }
+}
+
+rootProject.buildDir = "../build"
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
