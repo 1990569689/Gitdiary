@@ -41,7 +41,7 @@ Gitdiary 是一款基于 Flutter 3.22.0 开发的跨平台 Markdown/富文本编
 
 #### 📈 功能预览
 
-|夜间模式|Markdown渲染|
+|夜间模式|文本编辑|
 |---|---|
 |![分类示例](./images/b.png)|![分类示例](./images/a.png)|
 |富文本渲染|个人中心|
