@@ -1,3 +1,7 @@
+
+<div align="center">
+    <img width="200" height="200" src="https://github.com/guozhigq/pilipala/blob/main/assets/images/logo/logo_android.png">
+</div>
 <h1 align="center" style="border-bottom: none">
     <b>
         <a href="https://github.com/1990569689/Gitdiary"> ⭐️  Gitdiary ⭐️ <br></a><br>
@@ -9,18 +13,25 @@
 Gitdiary 是一个全平台Markdown和富文本日记事应用，使用Flutter开发。
 </p>
 
+
+
+
 <div align="center">
+  <img src="https://img.shields.io/github/stars/1990569689/Gitdiary" alt="GitHub Repo stars">
+  <img src="https://img.shields.io/github/repo-size/1990569689/Gitdiary" alt="GitHub repo size">
+  <img src="https://img.shields.io/github/downloads/1990569689/Gitdiary/total" alt="GitHub all releases">
   <img src="https://img.shields.io/badge/Flutter-3.22.0-blue.svg" alt="Flutter Version">
   <img src="https://img.shields.io/badge/Platform-iOS%20%7C%20Android%20%7C%20Web-brightgreen.svg" alt="Supported Platforms">
-  <img src="https://img.shields.io/github/license/your-username/gitdiary.svg" alt="License">
-  <img src="https://img.shields.io/github/v/release/your-username/gitdiary?display_name=tag" alt="Release Version">
+  <img src="https://img.shields.io/github/license/1990569689/Gitdiary.svg" alt="License">
+  <img src="https://img.shields.io/github/v/release/1990569689/Gitdiary?display_name=tag" alt="Release Version">
+
 </div>
 
 <br>
 
 <div align="center">
-  <strong>一站式 Markdown 笔记协作利器</strong>
-  <p>本地自由创作，云端无缝协作的全流程 Markdown 笔记解决方案</p>
+  <strong>一站式移动端 Markdown和富文本笔记协作利器</strong>
+  <p>本地自由创作，云端无缝协作的全流程富文本笔记解决方案</p>
 </div>
 <p align="center"><img src="./images/1.jpg" alt="FlutterUnit App"  /></p>
 <p align="center"><img src="./images/2.jpg" alt="FlutterUnit App"  /></p>
