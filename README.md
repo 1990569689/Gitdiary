@@ -6,6 +6,8 @@
         <a href="https://github.com/1990569689/Gitdiary"> ⭐️  Gitdiary ⭐️ <br></a><br>
     </b>
 </h1>
+
+<p align="center"><a href="README.zh.md">简体中文</a> | <a href="./images/README_EN.md">English</a></p>
 <p align="center">
 Gitdiary 是一个全平台Markdown和富文本日记事应用，使用Flutter开发。
 </p>
