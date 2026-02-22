@@ -9,7 +9,7 @@
 <p align="center">
 Gitdiary is a cross-platform Markdown and rich-text diary application built with Flutter.
 </p>
-<p align="center"><a href="README.zh.md">简体中文</a> | <a href="./README_EN.md">English</a></p>
+<p align="center"><a href="README.md">简体中文</a> | <a href="./README_EN.md">English</a></p>
 
 <div align="center">
   <img src="https://img.shields.io/github/stars/19905696898/Gitdiary" alt="GitHub Repo stars">
